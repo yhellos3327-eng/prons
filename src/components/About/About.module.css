@@ -49,7 +49,7 @@
   bottom: -30px;
   right: -30px;
   background: var(--accent-gold);
-  color: var(--bg-primary);
+  color: #ffffff;
   padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
   text-align: center;
@@ -79,12 +79,19 @@
 }
 
 .label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
   font-size: var(--font-size-sm);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: var(--accent-gold);
   margin-bottom: var(--spacing-md);
+}
+
+.labelIcon {
+  font-size: 1.1em;
 }
 
 .title {
@@ -96,16 +103,16 @@
 
 .description {
   font-size: var(--font-size-base);
-  color: var(--text-muted);
+  color: var(--text-primary);
   line-height: 1.8;
   margin-bottom: var(--spacing-lg);
 }
 
 .stats {
   display: flex;
-  gap: var(--spacing-2xl);
-  margin: var(--spacing-xl) 0 var(--spacing-2xl);
-  padding: var(--spacing-xl) 0;
+  gap: var(--spacing-xl);
+  margin: var(--spacing-lg) 0 var(--spacing-lg);
+  padding: var(--spacing-lg) 0;
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
   width: 100%;
@@ -114,7 +121,14 @@
 .stat {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: var(--spacing-xs);
+}
+
+.statIcon {
+  font-size: var(--font-size-xl);
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-xs);
 }
 
 .statNumber {

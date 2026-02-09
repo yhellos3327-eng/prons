@@ -1,36 +1,26 @@
 import { motion } from 'framer-motion';
-import { HiMail, HiLocationMarker, HiPhone } from 'react-icons/hi';
-import { FaGithub, FaLinkedinIn, FaTwitter } from 'react-icons/fa';
+import { HiChatAlt2 } from 'react-icons/hi';
 import styles from './Contact.module.css';
 
-const contactInfo = [
-  {
-    icon: HiMail,
-    label: '이메일',
-    value: 'hello@example.com',
-    href: 'mailto:hello@example.com',
-  },
-  {
-    icon: HiLocationMarker,
-    label: '위치',
-    value: '서울, 대한민국',
-    href: null,
-  },
-  {
-    icon: HiPhone,
-    label: '전화',
-    value: '010-1234-5678',
-    href: 'tel:+821012345678',
-  },
-];
+// 텔레그램 SVG 아이콘
+const TelegramIcon = ({ size = 24 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+  </svg>
+);
 
-const socialLinks = [
-  { name: 'GitHub', href: 'https://github.com', icon: FaGithub },
-  { name: 'LinkedIn', href: 'https://linkedin.com', icon: FaLinkedinIn },
-  { name: 'Twitter', href: 'https://twitter.com', icon: FaTwitter },
-];
+const TELEGRAM_ID = 'PANDA_SGN';
 
 const Contact = () => {
+  const handleTelegramClick = () => {
+    window.open(`https://t.me/${TELEGRAM_ID}`, '_blank');
+  };
+
   return (
     <section id="contact" className={`section ${styles.contact}`}>
       <div className="container">
@@ -41,151 +31,64 @@ const Contact = () => {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
-          <span className={styles.label}>연락처</span>
+          <span className={styles.label}>
+            <HiChatAlt2 className={styles.labelIcon} />
+            문의하기
+          </span>
           <h2 className="section-title">
-            함께 <span className="accent">연결해요</span>
+            프로젝트 <span className="accent">문의</span>
           </h2>
           <p className="section-subtitle">
-            프로젝트가 있으신가요? 어떻게 함께 일할 수 있을지 이야기해요
+            디자인이 필요하신가요? 텔레그램으로 편하게 문의해주세요
           </p>
         </motion.div>
 
         <div className={styles.content}>
           <motion.div
             className={styles.infoSection}
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <div className={styles.infoCards}>
-              {contactInfo.map((info, index) => (
-                <motion.div
-                  key={info.label}
-                  className={styles.infoCard}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                >
-                  <div className={styles.iconWrapper}>
-                    <info.icon size={24} />
-                  </div>
-                  <div className={styles.infoText}>
-                    <span className={styles.infoLabel}>{info.label}</span>
-                    {info.href ? (
-                      <a href={info.href} className={styles.infoValue}>
-                        {info.value}
-                      </a>
-                    ) : (
-                      <span className={styles.infoValue}>{info.value}</span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className={styles.socialSection}>
-              <span className={styles.socialLabel}>SNS 팔로우</span>
-              <div className={styles.socialLinks}>
-                {socialLinks.map((social, index) => (
-                  <motion.a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.socialLink}
-                    whileHover={{ scale: 1.2, y: -5, rotate: 5 }}
-                    whileTap={{ scale: 0.9 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+            <div className={styles.telegramCard}>
+              <div className={styles.telegramIconLarge}>
+                <TelegramIcon size={36} />
+              </div>
+              <h3 className={styles.cardTitle}>텔레그램으로 빠른 상담</h3>
+              <p className={styles.cardDesc}>
+                평균 응답 시간 30분 이내<br />
+                1:1 맞춤 상담으로 진행됩니다
+              </p>
+              <div className={styles.features}>
+                {['빠른 응답', '무료 상담', '1:1 맞춤'].map((feature, i) => (
+                  <motion.span
+                    key={feature}
+                    className={styles.featureTag}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                    aria-label={social.name}
+                    transition={{ delay: 0.6 + i * 0.1 }}
                   >
-                    <social.icon size={20} />
-                  </motion.a>
+                    {feature}
+                  </motion.span>
                 ))}
+              </div>
+
+              <div className={styles.telegramBtnWrapper}>
+                <motion.button
+                  className={styles.telegramBtn}
+                  onClick={handleTelegramClick}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <TelegramIcon size={22} />
+                  텔레그램 문의하기
+                </motion.button>
+                <p className={styles.telegramId} onClick={handleTelegramClick}>@PANDA_SGN</p>
               </div>
             </div>
           </motion.div>
-
-          <motion.form
-            className={styles.form}
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <div className={styles.formRow}>
-              <motion.div
-                className={styles.formGroup}
-                whileFocus={{ scale: 1.02 }}
-              >
-                <label htmlFor="name" className={styles.formLabel}>
-                  이름
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  className={styles.formInput}
-                  placeholder="홍길동"
-                  required
-                />
-              </motion.div>
-              <div className={styles.formGroup}>
-                <label htmlFor="email" className={styles.formLabel}>
-                  이메일
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className={styles.formInput}
-                  placeholder="example@email.com"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="subject" className={styles.formLabel}>
-                제목
-              </label>
-              <input
-                type="text"
-                id="subject"
-                name="subject"
-                className={styles.formInput}
-                placeholder="프로젝트 문의"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="message" className={styles.formLabel}>
-                메시지
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                className={styles.formTextarea}
-                placeholder="프로젝트에 대해 알려주세요..."
-                rows={5}
-                required
-              />
-            </div>
-
-            <motion.button
-              type="submit"
-              className={`btn btn-primary ${styles.submitBtn}`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              메시지 보내기
-            </motion.button>
-          </motion.form>
         </div>
       </div>
     </section>

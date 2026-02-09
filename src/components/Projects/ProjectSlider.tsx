@@ -1,22 +1,25 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import { HiPhotograph, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { projects } from '../../data/projects';
-import ProjectCard from './ProjectCard';
 import styles from './ProjectSlider.module.css';
+
+const SLIDE_INTERVAL = 5000;
 
 const ProjectSlider = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
-
-  const handlePrev = useCallback(() => {
-    setDirection(-1);
-    setActiveIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
-  }, []);
+  const [isPaused, setIsPaused] = useState(false);
+  const [direction, setDirection] = useState(1);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleNext = useCallback(() => {
     setDirection(1);
     setActiveIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    setDirection(-1);
+    setActiveIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
   }, []);
 
   // 키보드 네비게이션
@@ -25,57 +28,41 @@ const ProjectSlider = () => {
       if (e.key === 'ArrowLeft') handlePrev();
       if (e.key === 'ArrowRight') handleNext();
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handlePrev, handleNext]);
+  }, [handleNext, handlePrev]);
 
-  const getCardStyle = (index: number) => {
-    const diff = index - activeIndex;
-    const normalizedDiff =
-      diff > projects.length / 2
-        ? diff - projects.length
-        : diff < -projects.length / 2
-          ? diff + projects.length
-          : diff;
+  // 자동 슬라이드
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      handleNext();
+    }, SLIDE_INTERVAL);
+    return () => clearInterval(interval);
+  }, [isPaused, handleNext]);
 
-    if (normalizedDiff === 0) {
-      return {
-        x: 0,
-        rotateY: 0,
-        scale: 1,
-        zIndex: 10,
-        opacity: 1,
-      };
+  // 슬라이드 변경 시 비디오 재생
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
     }
+  }, [activeIndex]);
 
-    if (normalizedDiff === -1) {
-      return {
-        x: '-55%',
-        rotateY: 25,
-        scale: 0.85,
-        zIndex: 5,
-        opacity: 0.6,
-      };
-    }
+  const currentProject = projects[activeIndex];
+  const isVideo = !!currentProject.video;
 
-    if (normalizedDiff === 1) {
-      return {
-        x: '55%',
-        rotateY: -25,
-        scale: 0.85,
-        zIndex: 5,
-        opacity: 0.6,
-      };
-    }
+  // 인접 슬라이드 프리로드 인덱스
+  const preloadIndices = useMemo(() => {
+    const next = (activeIndex + 1) % projects.length;
+    const prev = (activeIndex - 1 + projects.length) % projects.length;
+    return [prev, next];
+  }, [activeIndex]);
 
-    return {
-      x: normalizedDiff < 0 ? '-100%' : '100%',
-      rotateY: normalizedDiff < 0 ? 45 : -45,
-      scale: 0.7,
-      zIndex: 0,
-      opacity: 0,
-    };
+  const slideVariants = {
+    enter: (dir: number) => ({ opacity: 0, x: dir > 0 ? 60 : -60 }),
+    center: { opacity: 1, x: 0 },
+    exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -60 : 60 }),
   };
 
   return (
@@ -83,95 +70,139 @@ const ProjectSlider = () => {
       <div className="container">
         <motion.div
           className={styles.header}
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
         >
-          <h2 className="section-title">
+          <span className={styles.label}>
+            <HiPhotograph className={styles.labelIcon} />
+            Portfolio
+          </span>
+          <h2 className={styles.sectionTitle}>
             주요 <span className="accent">작업물</span>
           </h2>
-          <p className="section-subtitle">
-            브랜딩, UI/UX, 그래픽 디자인 포트폴리오
-          </p>
         </motion.div>
 
-        <div className={styles.sliderContainer}>
-          <div className={styles.slider}>
-            <AnimatePresence mode="popLayout">
-              {projects.map((project, index) => {
-                const cardStyle = getCardStyle(index);
-                return (
-                  <motion.div
-                    key={project.id}
-                    className={styles.cardWrapper}
-                    initial={{
-                      x: direction > 0 ? '100%' : '-100%',
-                      rotateY: direction > 0 ? -45 : 45,
-                      opacity: 0,
-                    }}
-                    animate={{
-                      x: cardStyle.x,
-                      rotateY: cardStyle.rotateY,
-                      scale: cardStyle.scale,
-                      zIndex: cardStyle.zIndex,
-                      opacity: cardStyle.opacity,
-                    }}
-                    transition={{
-                      duration: 0.5,
-                      ease: [0.32, 0.72, 0, 1],
-                    }}
-                    style={{
-                      position: 'absolute',
-                      transformStyle: 'preserve-3d',
-                    }}
-                  >
-                    <ProjectCard
-                      project={project}
-                      isActive={index === activeIndex}
+        <div
+          className={styles.sliderContainer}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+        >
+          {/* 좌/우 네비게이션 버튼 */}
+          <button
+            className={`${styles.navBtn} ${styles.navBtnPrev}`}
+            onClick={handlePrev}
+            aria-label="이전 프로젝트"
+          >
+            <HiChevronLeft size={24} />
+          </button>
+          <button
+            className={`${styles.navBtn} ${styles.navBtnNext}`}
+            onClick={handleNext}
+            aria-label="다음 프로젝트"
+          >
+            <HiChevronRight size={24} />
+          </button>
+
+          {/* 카드 슬라이더 */}
+          <div className={styles.cardContainer}>
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={activeIndex}
+                className={styles.card}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              >
+                <div className={styles.mediaWrapper}>
+                  {isVideo ? (
+                    <video
+                      ref={videoRef}
+                      src={currentProject.video}
+                      className={styles.media}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
                     />
-                  </motion.div>
-                );
-              })}
+                  ) : (
+                    <img
+                      src={currentProject.image}
+                      alt={currentProject.title}
+                      className={styles.media}
+                      loading="lazy"
+                    />
+                  )}
+                  <div className={styles.mediaOverlay} />
+                  <span className={styles.projectNumber}>
+                    {String(activeIndex + 1).padStart(2, '0')}
+                  </span>
+                  {isVideo && (
+                    <span className={styles.mediaBadge}>▶ VIDEO</span>
+                  )}
+                </div>
+                <div className={styles.cardContent}>
+                  <h3 className={styles.title}>{currentProject.title}</h3>
+                  <p className={styles.description}>{currentProject.description}</p>
+                  <div className={styles.tags}>
+                    {currentProject.tags.map((tag) => (
+                      <span key={tag} className={styles.tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
             </AnimatePresence>
           </div>
 
-          <div className={styles.controls}>
-            <motion.button
-              className={styles.navButton}
-              onClick={handlePrev}
-              aria-label="이전 프로젝트"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <HiChevronLeft size={28} />
-            </motion.button>
+          {/* 인접 슬라이드 프리로드 */}
+          <div style={{ display: 'none' }}>
+            {preloadIndices.map((i) => {
+              const p = projects[i];
+              if (p.video) return <link key={i} rel="preload" as="video" href={p.video} />;
+              if (p.image) return <link key={i} rel="preload" as="image" href={p.image} />;
+              return null;
+            })}
+          </div>
 
-            <div className={styles.indicators}>
-              {projects.map((_, index) => (
-                <button
-                  key={index}
-                  className={`${styles.indicator} ${
-                    index === activeIndex ? styles.active : ''
-                  }`}
-                  onClick={() => {
-                    setDirection(index > activeIndex ? 1 : -1);
-                    setActiveIndex(index);
-                  }}
-                  aria-label={`${index + 1}번 프로젝트로 이동`}
-                />
-              ))}
-            </div>
+          {/* 인디케이터 */}
+          <div className={styles.indicators}>
+            {projects.map((project, index) => (
+              <button
+                key={index}
+                className={`${styles.indicator} ${
+                  index === activeIndex ? styles.active : ''
+                }`}
+                onClick={() => {
+                  setDirection(index > activeIndex ? 1 : -1);
+                  setActiveIndex(index);
+                }}
+                aria-label={`${project.title}로 이동`}
+              >
+                <span className={styles.indicatorLabel}>
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+              </button>
+            ))}
+          </div>
 
-            <motion.button
-              className={styles.navButton}
-              onClick={handleNext}
-              aria-label="다음 프로젝트"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <HiChevronRight size={28} />
-            </motion.button>
+          {/* 프로젝트 카운터 */}
+          <div className={styles.counter}>
+            <span className={styles.counterCurrent}>
+              {String(activeIndex + 1).padStart(2, '0')}
+            </span>
+            <span className={styles.counterDivider}>/</span>
+            <span className={styles.counterTotal}>
+              {String(projects.length).padStart(2, '0')}
+            </span>
           </div>
         </div>
       </div>

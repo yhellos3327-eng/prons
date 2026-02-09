@@ -7,7 +7,21 @@
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
       "Bash(timeout 5 npm run dev:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__read_text_file",
+      "Bash(wrangler pages deploy:*)",
+      "Bash(wrangler pages deployment list:*)",
+      "Bash(wrangler pages project:*)",
+      "mcp__filesystem__list_allowed_directories",
+      "mcp__filesystem__list_directory",
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(npx vite:*)",
+      "Bash(npx wrangler:*)",
+      "Bash(npx wrangler pages project list:*)",
+      "Bash(ls:*)",
+      "Bash(du:*)",
+      "Bash(find:*)"
     ]
   }
 }

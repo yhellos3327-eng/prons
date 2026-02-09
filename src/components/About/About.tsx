@@ -1,12 +1,13 @@
 import { useRef } from 'react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { HiUser, HiLightningBolt } from 'react-icons/hi';
+import { FaProjectDiagram, FaUsers, FaTrophy } from 'react-icons/fa';
 import styles from './About.module.css';
 
 const About = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
-  // 패럴랙스 효과
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start']
@@ -29,10 +30,13 @@ const About = () => {
               className={styles.imageWrapper}
               style={{ y: imageY }}
             >
-              <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=700&fit=crop"
-                alt="프로필"
+              <video
+                src="/projects/work-01.mp4"
                 className={styles.image}
+                autoPlay
+                muted
+                loop
+                playsInline
               />
               <div className={styles.imageDecor} />
             </motion.div>
@@ -43,7 +47,7 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
             >
-              <span className={styles.badgeNumber}>5+</span>
+              <span className={styles.badgeNumber}>7+</span>
               <span className={styles.badgeText}>년 경력</span>
             </motion.div>
           </div>
@@ -56,6 +60,7 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
+              <HiUser className={styles.labelIcon} />
               소개
             </motion.span>
 
@@ -66,8 +71,8 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              디지털 경험을<br />
-              <span className="accent">창조합니다</span>
+              결과로 말하는 디자이너<br />
+              <span className="accent">판다디자인</span>
             </motion.h2>
 
             <motion.p
@@ -77,9 +82,7 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
             >
-              브랜드의 본질을 이해하고, 이를 시각적 언어로 표현하는 것에
-              전문성을 가진 열정적인 디자이너입니다. 전략적 사고와 창의적 감각을
-              바탕으로 브랜드와 사용자 사이의 연결고리를 만듭니다.
+              판다디자인을 선택해주셔서 감사합니다.
             </motion.p>
 
             <motion.p
@@ -89,8 +92,31 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
-              섬세한 디테일과 대담한 아이디어를 결합하는 접근 방식으로,
-              모든 프로젝트가 브랜드의 가치를 높이고 사람들의 마음에 남을 수 있도록 합니다.
+              저희는 한 번의 작업이 아닌,
+              오래 함께할 파트너가 되고자 합니다.
+            </motion.p>
+
+            <motion.p
+              className={styles.description}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.55 }}
+            >
+              고객님의 고민과 목표를 충분히 이해하고,
+              1:1 맞춤 소통을 통해
+              가장 만족스러운 결과를 만들어드립니다.
+            </motion.p>
+
+            <motion.p
+              className={styles.description}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+            >
+              작은 부분까지 책임지고, 끝까지 함께하는 디자인,
+              그것이 판다 디자인의 약속입니다.
             </motion.p>
 
             <motion.div
@@ -101,9 +127,9 @@ const About = () => {
               transition={{ delay: 0.6 }}
             >
               {[
-                { number: '50+', label: '완료 프로젝트' },
-                { number: '30+', label: '만족한 고객' },
-                { number: '5+', label: '수상 경력' }
+                { number: '50+', label: '완료 프로젝트', icon: FaProjectDiagram },
+                { number: '30+', label: '만족한 고객', icon: FaUsers },
+                { number: '7+', label: '년 경력', icon: FaTrophy }
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -113,6 +139,7 @@ const About = () => {
                   viewport={{ once: true }}
                   transition={{ delay: 0.7 + index * 0.1, type: 'spring' }}
                 >
+                  <stat.icon className={styles.statIcon} />
                   <span className={styles.statNumber}>{stat.number}</span>
                   <span className={styles.statLabel}>{stat.label}</span>
                 </motion.div>
@@ -129,6 +156,7 @@ const About = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
+              <HiLightningBolt size={18} />
               함께 일해요
             </motion.a>
           </div>

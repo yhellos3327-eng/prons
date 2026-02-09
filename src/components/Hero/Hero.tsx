@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { HiChevronDown } from 'react-icons/hi';
+import { HiChevronDoubleDown } from 'react-icons/hi';
+
 import styles from './Hero.module.css';
 
 // 타이핑 효과를 위한 텍스트
-const roles = ['디자이너', '아트 디렉터', '크리에이터'];
+const roles = ['PANDA DESIGN', '고객 신뢰 1순위 디자인 파트너'];
 
 const Hero = () => {
   const [roleIndex, setRoleIndex] = useState(0);
@@ -69,14 +70,7 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <motion.span
-            className={styles.greeting}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, type: 'spring' }}
-          >
-            안녕하세요
-          </motion.span>
+
 
           <motion.h1
             className={styles.title}
@@ -84,19 +78,34 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <span className={styles.name}>홍길동</span>
-            <br />
+            {/* <span className={styles.name}>홍길동</span> */}
+            <video
+              src="/video/panra_logo.webm"
+              className={styles.name}
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
             <span className={styles.role}>
-              창의적인 <span className={styles.accent}>
-                {displayText}
-                <motion.span
-                  className={styles.cursor}
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ duration: 0.5, repeat: Infinity }}
-                >
-                  |
-                </motion.span>
-              </span>
+              {roleIndex === 0 ? (
+                <>
+                  <span style={{ color: '#ffffff' }}>{displayText.slice(0, 6)}</span>
+                  <span className={styles.accent}>{displayText.slice(6)}</span>
+                </>
+              ) : (
+                <>
+                  <span style={{ color: '#ffffff' }}>{displayText.slice(0, 10)}</span>
+                  <span className={styles.accent}>{displayText.slice(10)}</span>
+                </>
+              )}
+              <motion.span
+                className={styles.cursor}
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+              >
+                |
+              </motion.span>
             </span>
           </motion.h1>
 
@@ -111,29 +120,7 @@ const Hero = () => {
             감각적인 비주얼과 전략적 사고로 브랜드 가치를 높입니다.
           </motion.p>
 
-          <motion.div
-            className={styles.cta}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-          >
-            <motion.a
-              href="#projects"
-              className="btn btn-primary"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              포트폴리오 보기
-            </motion.a>
-            <motion.a
-              href="#contact"
-              className="btn btn-outline"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              연락하기
-            </motion.a>
-          </motion.div>
+
         </motion.div>
       </div>
 
@@ -150,7 +137,7 @@ const Hero = () => {
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <HiChevronDown size={24} />
+          <HiChevronDoubleDown size={28} />
         </motion.div>
       </motion.a>
     </section>
