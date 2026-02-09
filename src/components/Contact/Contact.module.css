@@ -17,8 +17,12 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--accent-gold);
+  color: var(--text-primary);
   margin-bottom: var(--spacing-xs);
+}
+
+.labelIcon * {
+  fill: url(#contact-icon-gradient);
 }
 
 

@@ -91,7 +91,18 @@ const Contact = () => {
           </motion.div>
         </div>
       </div>
-    </section>
+
+
+      {/* SVG Gradient Definition */}
+      <svg width="0" height="0" className="visually-hidden">
+        <defs>
+          <linearGradient id="contact-icon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style={{ stopColor: '#dcdcdd' }} />
+            <stop offset="100%" style={{ stopColor: '#626262' }} />
+          </linearGradient>
+        </defs>
+      </svg>
+    </section >
   );
 };
 

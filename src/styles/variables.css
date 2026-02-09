@@ -4,9 +4,9 @@
   --bg-secondary: #111111;
   --bg-tertiary: #1a1a1a;
 
-  --accent-gold: #1C4D8D;
-  --accent-gold-dark: #0F2854;
-  --accent-gold-light: #2A6AB8;
+  --accent-primary: #45c0ff;
+  --accent-dark: #0F2854;
+  --accent-light: #5a42ec;
 
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.85);

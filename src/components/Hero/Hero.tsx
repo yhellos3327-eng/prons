@@ -7,6 +7,15 @@ import styles from './Hero.module.css';
 // 타이핑 효과를 위한 텍스트
 const roles = ['PANDA DESIGN', '고객 신뢰 1순위 디자인 파트너'];
 
+// 파티클 데이터 (컴포넌트 외부에서 한 번만 생성)
+const particleData = Array.from({ length: 15 }, () => ({
+  left: `${Math.random() * 100}%`,
+  animationDelay: `${Math.random() * 12}s`,
+  animationDuration: `${10 + Math.random() * 15}s`,
+  size: `${2 + Math.random() * 3}px`,
+  opacity: 0.2 + Math.random() * 0.4,
+}));
+
 const Hero = () => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
@@ -39,30 +48,26 @@ const Hero = () => {
     <section id="home" className={styles.hero}>
       <div className={styles.backgroundGradient} />
 
-      {/* 플로팅 파티클 효과 */}
-      <div className={styles.particles}>
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className={styles.particle}
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-              opacity: 0
-            }}
-            animate={{
-              y: [null, Math.random() * -200 - 100],
-              opacity: [0, 0.6, 0]
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
+      {/* 글로우 오브 효과 */}
+      <div className={styles.glowOrbs}>
+        <div className={`${styles.orb} ${styles.orb1}`} />
+        <div className={`${styles.orb} ${styles.orb2}`} />
+        <div className={`${styles.orb} ${styles.orb3}`} />
       </div>
 
+      {/* 파티클 */}
+      <div className={styles.particles}>
+        {particleData.map((p, i) => (
+          <div key={i} className={styles.particle} style={{
+            left: p.left,
+            animationDelay: p.animationDelay,
+            animationDuration: p.animationDuration,
+            width: p.size,
+            height: p.size,
+            opacity: p.opacity,
+          }} />
+        ))}
+      </div>
       <div className={`container ${styles.heroContent}`}>
         <motion.div
           className={styles.textContent}
@@ -70,8 +75,6 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-
-
           <motion.h1
             className={styles.title}
             initial={{ opacity: 0, y: 30 }}
@@ -80,7 +83,7 @@ const Hero = () => {
           >
             {/* <span className={styles.name}>홍길동</span> */}
             <video
-              src="/video/panra_logo.webm"
+              src="/video/composition_1_2.webm"
               className={styles.name}
               autoPlay
               muted
@@ -115,9 +118,8 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            브랜드의 본질을 담은 시각 언어로 아름다운 경험을 디자인합니다.
-            <br />
-            감각적인 비주얼과 전략적 사고로 브랜드 가치를 높입니다.
+            작은 디테일에 강렬함을, 과감함에 부드러움을 담아<br />
+            '<b>아, 괜찮은 디자이너 만났네</b>' 싶은 순간을 선사하겠습니다.
           </motion.p>
 
 

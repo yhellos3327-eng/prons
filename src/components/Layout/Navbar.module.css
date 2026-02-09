@@ -40,7 +40,7 @@
 
 .logoIcon {
   font-size: 1.8em;
-  color: var(--accent-gold);
+  color: var(--accent-primary);
   transition: transform var(--transition-fast);
 }
 
@@ -49,7 +49,7 @@
 }
 
 .logoAccent {
-  color: var(--accent-gold);
+  color: var(--accent-primary);
 }
 
 /* Desktop Navigation */
@@ -77,12 +77,12 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--accent-gold);
+  background: var(--accent-primary);
   transition: width var(--transition-base);
 }
 
 .navLink:hover {
-  color: var(--accent-gold);
+  color: var(--accent-primary);
 }
 
 .navLink:hover::after {
@@ -98,7 +98,16 @@
 }
 
 .mobileMenuBtn:hover {
-  color: var(--accent-gold);
+  color: var(--accent-primary);
+}
+
+/* Mobile Overlay */
+.mobileOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: var(--z-fixed);
 }
 
 /* Mobile Navigation */
@@ -114,6 +123,7 @@
   padding: var(--spacing-xl);
   flex-direction: column;
   gap: var(--spacing-md);
+  z-index: calc(var(--z-fixed) + 1);
 }
 
 .mobileNavLink {
@@ -126,7 +136,7 @@
 }
 
 .mobileNavLink:hover {
-  color: var(--accent-gold);
+  color: var(--accent-primary);
   padding-left: var(--spacing-md);
 }
 
@@ -142,5 +152,9 @@
 
   .mobileNav {
     display: flex;
+  }
+
+  .mobileOverlay {
+    display: block;
   }
 }

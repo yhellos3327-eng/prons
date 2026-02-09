@@ -84,7 +84,7 @@ a {
 }
 
 a:hover {
-  color: var(--accent-gold);
+  color: var(--accent-primary);
 }
 
 /* Lists */
@@ -145,7 +145,11 @@ button {
 
 /* Accent text */
 .accent {
-  color: var(--accent-gold);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
 }
 
 /* Glass effect */
@@ -171,24 +175,24 @@ button {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-dark) 100%);
   color: var(--text-primary);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--accent-gold-light) 0%, var(--accent-gold) 100%);
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-primary) 100%);
   color: var(--text-primary);
 }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid var(--accent-gold);
-  color: var(--accent-gold);
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
 }
 
 .btn-outline:hover {
-  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
-  border-color: var(--accent-gold);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-dark) 100%);
+  border-color: var(--accent-primary);
   color: var(--text-primary);
 }
 
@@ -202,23 +206,23 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--accent-gold-dark);
+  background: var(--accent-dark);
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-gold);
+  background: var(--accent-primary);
 }
 
 /* Selection */
 ::selection {
-  background: var(--accent-gold);
+  background: var(--accent-primary);
   color: var(--bg-primary);
 }
 
 /* Focus styles */
 :focus-visible {
-  outline: 2px solid var(--accent-gold);
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
@@ -245,7 +249,7 @@ button {
 
 /* 텍스트 그라디언트 효과 */
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-light) 50%, var(--accent-gold-dark) 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 50%, var(--accent-dark) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -264,5 +268,18 @@ button {
 
   100% {
     background-position: 0% 50%;
+  }
+}
+
+/* 접근성: 모션 감소 선호 */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

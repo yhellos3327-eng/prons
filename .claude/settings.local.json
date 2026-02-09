@@ -21,7 +21,8 @@
       "Bash(npx wrangler pages project list:*)",
       "Bash(ls:*)",
       "Bash(du:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(test:*)"
     ]
   }
 }

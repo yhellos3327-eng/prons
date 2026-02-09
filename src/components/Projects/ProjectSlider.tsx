@@ -6,6 +6,15 @@ import styles from './ProjectSlider.module.css';
 
 const SLIDE_INTERVAL = 5000;
 
+// 파티클 데이터 (컴포넌트 외부에서 한 번만 생성 — Hero와 동일 구조)
+const particleData = Array.from({ length: 15 }, () => ({
+  left: `${Math.random() * 100}%`,
+  animationDelay: `${Math.random() * 12}s`,
+  animationDuration: `${10 + Math.random() * 15}s`,
+  size: `${2 + Math.random() * 3}px`,
+  opacity: 0.2 + Math.random() * 0.4,
+}));
+
 const ProjectSlider = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -45,7 +54,7 @@ const ProjectSlider = () => {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
     }
   }, [activeIndex]);
 
@@ -67,6 +76,33 @@ const ProjectSlider = () => {
 
   return (
     <section id="projects" className={`section ${styles.projects}`}>
+      <div className={styles.backgroundGradient} />
+
+      {/* 글로우 오브 효과 (Hero와 동일 구조) */}
+      <div className={styles.glowOrbs}>
+        <div className={`${styles.orb} ${styles.orb1}`} />
+        <div className={`${styles.orb} ${styles.orb2}`} />
+        <div className={`${styles.orb} ${styles.orb3}`} />
+      </div>
+
+      {/* 파티클 */}
+      <div className={styles.particles}>
+        {particleData.map((p, i) => (
+          <div
+            key={i}
+            className={styles.particle}
+            style={{
+              left: p.left,
+              animationDelay: p.animationDelay,
+              animationDuration: p.animationDuration,
+              width: p.size,
+              height: p.size,
+              opacity: p.opacity,
+            }}
+          />
+        ))}
+      </div>
+
       <div className="container">
         <motion.div
           className={styles.header}
@@ -178,9 +214,8 @@ const ProjectSlider = () => {
             {projects.map((project, index) => (
               <button
                 key={index}
-                className={`${styles.indicator} ${
-                  index === activeIndex ? styles.active : ''
-                }`}
+                className={`${styles.indicator} ${index === activeIndex ? styles.active : ''
+                  }`}
                 onClick={() => {
                   setDirection(index > activeIndex ? 1 : -1);
                   setActiveIndex(index);
@@ -206,6 +241,16 @@ const ProjectSlider = () => {
           </div>
         </div>
       </div>
+
+      {/* SVG Gradient Definition */}
+      <svg width="0" height="0" className="visually-hidden">
+        <defs>
+          <linearGradient id="project-icon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style={{ stopColor: '#dcdcdd' }} />
+            <stop offset="100%" style={{ stopColor: '#626262' }} />
+          </linearGradient>
+        </defs>
+      </svg>
     </section>
   );
 };

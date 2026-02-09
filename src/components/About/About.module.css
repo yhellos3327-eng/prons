@@ -7,7 +7,7 @@
 .content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-4xl);
+  gap: var(--spacing-3xl);
   align-items: center;
 }
 
@@ -39,36 +39,9 @@
   left: 20px;
   right: -20px;
   bottom: -20px;
-  border: 2px solid var(--accent-gold);
+  border: 2px solid var(--accent-primary);
   border-radius: var(--radius-xl);
   z-index: -1;
-}
-
-.experienceBadge {
-  position: absolute;
-  bottom: -30px;
-  right: -30px;
-  background: var(--accent-gold);
-  color: #ffffff;
-  padding: var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-}
-
-.badgeNumber {
-  display: block;
-  font-size: var(--font-size-3xl);
-  font-weight: 800;
-  line-height: 1;
-}
-
-.badgeText {
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.3;
 }
 
 /* Text Section */
@@ -86,12 +59,22 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--accent-gold);
+  color: var(--text-primary);
   margin-bottom: var(--spacing-md);
+}
+
+.labelIcon * {
+  fill: url(#icon-gradient);
 }
 
 .labelIcon {
   font-size: 1.1em;
+}
+
+.companyName {
+  font-size: var(--font-size-2xl);
+  display: inline-block;
+  margin-bottom: 0.2em;
 }
 
 .title {
@@ -105,16 +88,16 @@
   font-size: var(--font-size-base);
   color: var(--text-primary);
   line-height: 1.8;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  text-align: justify;
 }
 
 .stats {
   display: flex;
   gap: var(--spacing-xl);
-  margin: var(--spacing-lg) 0 var(--spacing-lg);
+  margin: var(--spacing-lg) 0 0;
   padding: var(--spacing-lg) 0;
   border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
   width: 100%;
 }
 
@@ -125,16 +108,24 @@
   gap: var(--spacing-xs);
 }
 
+.statIcon * {
+  fill: url(#icon-gradient);
+}
+
 .statIcon {
   font-size: var(--font-size-xl);
-  color: var(--accent-gold);
   margin-bottom: var(--spacing-xs);
+  display: inline-block;
 }
 
 .statNumber {
   font-size: var(--font-size-3xl);
   font-weight: 800;
-  color: var(--accent-gold);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .statLabel {
@@ -145,7 +136,7 @@
 /* Responsive */
 @media (max-width: 1024px) {
   .content {
-    gap: var(--spacing-3xl);
+    gap: var(--spacing-2xl);
   }
 
   .title {
@@ -156,7 +147,7 @@
 @media (max-width: 768px) {
   .content {
     grid-template-columns: 1fr;
-    gap: var(--spacing-3xl);
+    gap: var(--spacing-2xl);
     text-align: center;
   }
 
@@ -169,18 +160,13 @@
     max-width: 300px;
   }
 
-  .experienceBadge {
-    bottom: -20px;
-    right: -10px;
-    padding: var(--spacing-md);
-  }
-
-  .badgeNumber {
-    font-size: var(--font-size-2xl);
-  }
-
   .textSection {
     align-items: center;
+  }
+
+  .description {
+    text-align: center;
+    word-break: keep-all;
   }
 
   .stats {

@@ -1,4 +1,4 @@
-import { Navbar } from './components/Layout';
+import { Navbar, Footer } from './components/Layout';
 import { Hero } from './components/Hero';
 import { ProjectSlider } from './components/Projects';
 import { About } from './components/About';
@@ -15,6 +15,7 @@ function App() {
         <About />
         <Contact />
       </main>
+      <Footer />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-import { HiUser, HiLightningBolt } from 'react-icons/hi';
+import { HiUser } from 'react-icons/hi';
 import { FaProjectDiagram, FaUsers, FaTrophy } from 'react-icons/fa';
 import styles from './About.module.css';
 
@@ -40,16 +40,6 @@ const About = () => {
               />
               <div className={styles.imageDecor} />
             </motion.div>
-            <motion.div
-              className={styles.experienceBadge}
-              initial={{ scale: 0, rotate: -10 }}
-              whileInView={{ scale: 1, rotate: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-            >
-              <span className={styles.badgeNumber}>7+</span>
-              <span className={styles.badgeText}>년 경력</span>
-            </motion.div>
           </div>
 
           <div className={styles.textSection}>
@@ -71,8 +61,8 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              결과로 말하는 디자이너<br />
-              <span className="accent">판다디자인</span>
+              <span className={styles.companyName}>판다디자인</span><br />
+              <span className="accent">결과로 말하는 디자이너</span>
             </motion.h2>
 
             <motion.p
@@ -145,23 +135,19 @@ const About = () => {
                 </motion.div>
               ))}
             </motion.div>
-
-            <motion.a
-              href="#contact"
-              className="btn btn-primary"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.9 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <HiLightningBolt size={18} />
-              함께 일해요
-            </motion.a>
           </div>
         </motion.div>
       </div>
+
+      {/* SVG Gradient Definition */}
+      <svg width="0" height="0" className="visually-hidden">
+        <defs>
+          <linearGradient id="icon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style={{ stopColor: '#dcdcdd' }} />
+            <stop offset="100%" style={{ stopColor: '#626262' }} />
+          </linearGradient>
+        </defs>
+      </svg>
     </section>
   );
 };
