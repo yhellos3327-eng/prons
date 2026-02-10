@@ -66,6 +66,38 @@ const ProjectSlider = () => {
     exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -60 : 60 }),
   };
 
+  /* 터치 스와이프 로직 */
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsPaused(true);
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    setIsPaused(false);
+    if (!touchStartX.current || !touchEndX.current) return;
+
+    const distance = touchStartX.current - touchEndX.current;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
+
+    // Reset
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
   return (
     <section id="projects" className={`section ${styles.projects}`}>
       <div className={styles.backgroundGradient} />
@@ -98,8 +130,9 @@ const ProjectSlider = () => {
           className={styles.sliderContainer}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => setIsPaused(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {/* 좌/우 네비게이션 버튼 */}
           <button

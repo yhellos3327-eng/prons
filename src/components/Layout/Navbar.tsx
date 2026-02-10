@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
 import styles from './Navbar.module.css';
@@ -97,46 +98,50 @@ const Navbar = ({ onNavigate, currentPage }: NavbarProps) => {
           {isMobileMenuOpen ? <HiX size={24} /> : <HiMenuAlt3 size={24} />}
         </button>
 
-        {/* 모바일 네비게이션 */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <>
-              <motion.div
-                className={styles.mobileOverlay}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                onClick={() => setIsMobileMenuOpen(false)}
-                aria-hidden="true"
-              />
-              <motion.nav
-                className={styles.mobileNav}
-                initial={{ opacity: 0, x: '100%' }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: '100%' }}
-                transition={{ duration: 0.3 }}
-                role="navigation"
-                aria-label="모바일 메뉴"
-              >
-                {navLinks.map((link, index) => (
-                  <motion.a
-                    key={link.name}
-                    className={`${styles.mobileNavLink} ${currentPage === link.id ? styles.navLinkActive : ''}`}
-                    onClick={(e) => { e.preventDefault(); handleLinkClick(link.id); }}
-                    href="#"
-                    style={{ cursor: 'pointer' }}
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    {link.name}
-                  </motion.a>
-                ))}
-              </motion.nav>
-            </>
-          )}
-        </AnimatePresence>
+        {/* 모바일 네비게이션 - Portal 사용 */}
+        {typeof document !== 'undefined' && createPortal(
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <>
+                <motion.div
+                  className={styles.mobileOverlay}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-hidden="true"
+                />
+                <motion.nav
+                  className={styles.mobileNav}
+                  initial={{ opacity: 0, x: '100%' }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: '100%' }}
+                  transition={{ duration: 0.3 }}
+                  role="navigation"
+                  aria-label="모바일 메뉴"
+                >
+                  {navLinks.map((link, index) => (
+                    <motion.a
+                      key={link.name}
+                      className={`${styles.mobileNavLink} ${currentPage === link.id ? styles.navLinkActive : ''}`}
+                      onClick={(e) => { e.preventDefault(); handleLinkClick(link.id); }}
+                      href="#"
+                      style={{ cursor: 'pointer' }}
+                      initial={{ opacity: 0, x: 50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      {link.name}
+                    </motion.a>
+                  ))}
+                </motion.nav>
+              </>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
+
       </div>
     </motion.header>
   );

@@ -303,40 +303,51 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .name {
-    max-width: 320px;
+  .title {
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    line-height: 1.2;
   }
 
   .description {
-    font-size: var(--font-size-sm);
-    padding: 0 var(--spacing-md);
-    margin: var(--spacing-lg) auto var(--spacing-xl);
+    font-size: 1rem;
+    padding: 0 var(--spacing-lg);
+    margin: var(--spacing-lg) auto var(--spacing-2xl);
+    line-height: 1.65;
+    word-break: keep-all;
   }
 
   .role {
-    font-size: 0.55em;
+    font-size: 0.7em;
+    padding: var(--spacing-xs) var(--spacing-sm);
   }
 
   .role::before {
     width: 40px;
+    bottom: -2px;
   }
 
   .scrollIndicator {
     bottom: var(--spacing-xl);
   }
 
-  .orb1 {
-    width: 300px;
-    height: 300px;
+  .orbPrimary {
+    width: 280px;
+    height: 280px;
+    opacity: 0.6;
+    filter: blur(60px);
   }
 
-  .orb2 {
-    width: 250px;
-    height: 250px;
+  .orbSecondary {
+    width: 220px;
+    height: 220px;
+    opacity: 0.5;
+    filter: blur(60px);
   }
 
-  .orb3 {
-    width: 200px;
-    height: 200px;
+  .orbAccent {
+    width: 180px;
+    height: 180px;
+    opacity: 0.5;
+    filter: blur(50px);
   }
 }

@@ -4,11 +4,11 @@
   left: 0;
   right: 0;
   height: var(--navbar-height);
-  z-index: var(--z-fixed);
+  z-index: calc(var(--z-fixed) + 10);
   transition: background-color var(--transition-base), backdrop-filter var(--transition-base);
 }
 
-.navbar.scrolled {
+.scrolled {
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -132,9 +132,6 @@
 /* Mobile Menu Button */
 .mobileMenuToggle {
   display: none;
-  color: var(--text-primary);
-  padding: var(--spacing-sm);
-  transition: color var(--transition-fast);
 }
 
 .mobileMenuToggle:hover {
@@ -153,17 +150,6 @@
 /* Mobile Navigation */
 .mobileNav {
   display: none;
-  position: fixed;
-  top: var(--navbar-height);
-  right: 0;
-  bottom: 0;
-  width: 280px;
-  background: var(--bg-secondary);
-  border-left: 1px solid var(--border-color);
-  padding: var(--spacing-xl);
-  flex-direction: column;
-  gap: var(--spacing-md);
-  z-index: calc(var(--z-fixed) + 1);
 }
 
 .mobileNavLink {
@@ -187,11 +173,31 @@
   }
 
   .mobileMenuToggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    transition: color var(--transition-fast);
   }
 
   .mobileNav {
     display: flex;
+    position: fixed;
+    top: var(--navbar-height);
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid var(--border-color);
+    padding: var(--spacing-xl);
+    flex-direction: column;
+    gap: var(--spacing-md);
+    z-index: calc(var(--z-fixed) + 1);
   }
 
   .mobileOverlay {
