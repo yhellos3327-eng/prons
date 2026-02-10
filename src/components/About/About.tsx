@@ -62,7 +62,7 @@ const About = () => {
               transition={{ delay: 0.3 }}
             >
               <span className={styles.companyName}>판다디자인</span><br />
-              <span className="accent">결과로 말하는 디자이너</span>
+              <span className="accent">함께 성장하는 디자인 파트너</span>
             </motion.h2>
 
             <motion.p
@@ -72,7 +72,7 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
             >
-              판다디자인을 선택해주셔서 감사합니다.
+              판다디자인을 찾아주셔서 진심으로 감사합니다.
             </motion.p>
 
             <motion.p
@@ -82,8 +82,8 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
-              저희는 한 번의 작업이 아닌,
-              오래 함께할 파트너가 되고자 합니다.
+              한 번의 작업이 아닌, 오래 함께할
+              파트너가 되는 것을 목표로 하고 있습니다.
             </motion.p>
 
             <motion.p
@@ -93,9 +93,8 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.55 }}
             >
-              고객님의 고민과 목표를 충분히 이해하고,
-              1:1 맞춤 소통을 통해
-              가장 만족스러운 결과를 만들어드립니다.
+              고객님의 고민을 내 일처럼 생각하며,
+              처음부터 끝까지 책임지는 디자인을 약속드립니다.
             </motion.p>
 
             <motion.p
@@ -105,8 +104,8 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.6 }}
             >
-              작은 부분까지 책임지고, 끝까지 함께하는 디자인,
-              그것이 판다 디자인의 약속입니다.
+              앞으로도 믿고 맡길 수 있는 디자인 파트너로,
+              늘 곁에서 함께 성장해 나가겠습니다.
             </motion.p>
 
             <motion.div

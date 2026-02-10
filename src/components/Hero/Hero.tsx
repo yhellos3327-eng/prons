@@ -4,26 +4,18 @@ import { HiChevronDoubleDown } from 'react-icons/hi';
 
 import styles from './Hero.module.css';
 
-// 타이핑 효과를 위한 텍스트
+/** 타이핑 효과를 위한 텍스트 배열 */
 const roles = ['PANDA DESIGN', '고객 신뢰 1순위 디자인 파트너'];
 
-// 파티클 데이터 (컴포넌트 외부에서 한 번만 생성)
-const particleData = Array.from({ length: 15 }, () => ({
-  left: `${Math.random() * 100}%`,
-  animationDelay: `${Math.random() * 12}s`,
-  animationDuration: `${10 + Math.random() * 15}s`,
-  size: `${2 + Math.random() * 3}px`,
-  opacity: 0.2 + Math.random() * 0.4,
-}));
-
+/** 파티클 데이터 (컴포넌트 외부에서 한 번만 생성) */
 const Hero = () => {
-  const [roleIndex, setRoleIndex] = useState(0);
+  const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // 타이핑 애니메이션 효과
+  /** 타이핑 애니메이션 효과 */
   useEffect(() => {
-    const currentRole = roles[roleIndex];
+    const currentRole = roles[currentRoleIndex];
     const timeout = setTimeout(() => {
       if (!isDeleting) {
         if (displayText.length < currentRole.length) {
@@ -36,13 +28,13 @@ const Hero = () => {
           setDisplayText(currentRole.slice(0, displayText.length - 1));
         } else {
           setIsDeleting(false);
-          setRoleIndex((prev) => (prev + 1) % roles.length);
+          setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
         }
       }
     }, isDeleting ? 50 : 150);
 
     return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, roleIndex]);
+  }, [displayText, isDeleting, currentRoleIndex]);
 
   return (
     <section id="home" className={styles.hero}>
@@ -50,24 +42,12 @@ const Hero = () => {
 
       {/* 글로우 오브 효과 */}
       <div className={styles.glowOrbs}>
-        <div className={`${styles.orb} ${styles.orb1}`} />
-        <div className={`${styles.orb} ${styles.orb2}`} />
-        <div className={`${styles.orb} ${styles.orb3}`} />
+        <div className={`${styles.orb} ${styles.orbPrimary}`} />
+        <div className={`${styles.orb} ${styles.orbSecondary}`} />
+        <div className={`${styles.orb} ${styles.orbAccent}`} />
       </div>
 
-      {/* 파티클 */}
-      <div className={styles.particles}>
-        {particleData.map((p, i) => (
-          <div key={i} className={styles.particle} style={{
-            left: p.left,
-            animationDelay: p.animationDelay,
-            animationDuration: p.animationDuration,
-            width: p.size,
-            height: p.size,
-            opacity: p.opacity,
-          }} />
-        ))}
-      </div>
+
       <div className={`container ${styles.heroContent}`}>
         <motion.div
           className={styles.textContent}
@@ -81,9 +61,8 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            {/* <span className={styles.name}>홍길동</span> */}
             <video
-              src="/video/composition_1_2.webm"
+              src="/video/logo3.webm"
               className={styles.name}
               autoPlay
               muted
@@ -91,7 +70,7 @@ const Hero = () => {
               playsInline
             />
             <span className={styles.role}>
-              {roleIndex === 0 ? (
+              {currentRoleIndex === 0 ? (
                 <>
                   <span style={{ color: '#ffffff' }}>{displayText.slice(0, 6)}</span>
                   <span className={styles.accent}>{displayText.slice(6)}</span>
@@ -122,7 +101,6 @@ const Hero = () => {
             '<b>아, 괜찮은 디자이너 만났네</b>' 싶은 순간을 선사하겠습니다.
           </motion.p>
 
-
         </motion.div>
       </div>
 
@@ -142,6 +120,16 @@ const Hero = () => {
           <HiChevronDoubleDown size={28} />
         </motion.div>
       </motion.a>
+
+      {/* SVG 그라이언트 */}
+      <svg width="0" height="0" className="visually-hidden">
+        <defs>
+          <linearGradient id="hero-scroll-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style={{ stopColor: '#09bbfe' }} />
+            <stop offset="100%" style={{ stopColor: '#5a42ec' }} />
+          </linearGradient>
+        </defs>
+      </svg>
     </section>
   );
 };

@@ -2,17 +2,12 @@
   position: relative;
   z-index: 2;
   overflow: hidden;
+  background: #000000;
 }
 
-/* 배경 그라데이션 */
+/* 배경 그라데이션 — 제거됨 */
 .backgroundGradient {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 80% 20%, rgba(28, 77, 141, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 20% 80%, rgba(15, 40, 84, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(28, 77, 141, 0.06) 0%, transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 
 /* 글로우 오브 */
@@ -26,38 +21,38 @@
 .orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(90px);
 }
 
-.orb1 {
+.orbPrimary {
   width: 500px;
   height: 500px;
   background: rgba(28, 77, 141, 0.25);
   top: -10%;
-  right: -5%;
-  animation: proj-orb-float-1 17s ease-in-out infinite;
+  left: -5%;
+  animation: orb-float-1 15s ease-in-out infinite;
 }
 
-.orb2 {
+.orbSecondary {
   width: 400px;
   height: 400px;
   background: rgba(42, 106, 184, 0.18);
   bottom: -5%;
-  left: -5%;
-  animation: proj-orb-float-2 20s ease-in-out infinite;
+  right: -5%;
+  animation: orb-float-2 18s ease-in-out infinite;
 }
 
-.orb3 {
+.orbAccent {
   width: 300px;
   height: 300px;
-  background: rgba(15, 40, 84, 0.22);
+  background: rgba(69, 192, 255, 0.08);
   top: 45%;
   left: 50%;
   transform: translateX(-50%);
   animation: proj-orb-float-3 22s ease-in-out infinite;
 }
 
-@keyframes proj-orb-float-1 {
+@keyframes orb-float-1 {
 
   0%,
   100% {
@@ -73,7 +68,7 @@
   }
 }
 
-@keyframes proj-orb-float-2 {
+@keyframes orb-float-2 {
 
   0%,
   100% {
@@ -115,35 +110,51 @@
 
 .particle {
   position: absolute;
-  bottom: -10px;
-  background: rgba(42, 106, 184, 0.7);
+  bottom: -20px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(42, 106, 184, 0.4) 70%);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  animation: proj-particle-rise linear infinite;
+  box-shadow: 0 0 10px rgba(42, 106, 184, 0.3);
+  animation: proj-bubble-rise linear infinite;
+  pointer-events: none;
 }
 
-@keyframes proj-particle-rise {
+@keyframes proj-bubble-rise {
   0% {
-    transform: translateY(0) translateX(0);
+    transform: translateY(0) translateX(0) scale(0.5);
     opacity: 0;
   }
 
   10% {
-    opacity: var(--particle-opacity, 0.4);
+    opacity: var(--particle-opacity, 0.6);
+  }
+
+  25% {
+    transform: translateY(-25vh) translateX(15px) scale(1.1);
+  }
+
+  50% {
+    transform: translateY(-50vh) translateX(-10px) scale(0.9);
+  }
+
+  75% {
+    transform: translateY(-75vh) translateX(10px) scale(1.1);
   }
 
   90% {
-    opacity: var(--particle-opacity, 0.4);
+    opacity: var(--particle-opacity, 0.6);
   }
 
   100% {
-    transform: translateY(-100vh) translateX(30px);
+    transform: translateY(-110vh) translateX(-5px) scale(0.5);
     opacity: 0;
   }
 }
 
 .header {
   text-align: center;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  padding-top: var(--spacing-2xl);
 }
 
 .sectionTitle {
@@ -176,47 +187,47 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   position: relative;
 }
 
-/* 좌/우 네비게이션 버튼 */
-.navBtn {
+/* 좌/우 네비게이션 버튼 — 카드 안쪽에 오버레이 */
+.navigationButton {
   position: absolute;
   top: 50%;
-  transform: translateY(-80%);
-  z-index: 10;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
   width: 44px;
   height: 44px;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  color: var(--text-primary);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: all var(--transition-base);
   opacity: 0;
 }
 
-.sliderContainer:hover .navBtn {
+.sliderContainer:hover .navigationButton {
   opacity: 1;
 }
 
-.navBtn:hover {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: #fff;
+.navigationButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.1);
 }
 
-.navBtnPrev {
-  left: -60px;
+.prevButton {
+  left: var(--spacing-md);
 }
 
-.navBtnNext {
-  right: -60px;
+.nextButton {
+  right: var(--spacing-md);
 }
 
 /* 카드 컨테이너 */
@@ -230,6 +241,13 @@
   border-radius: var(--radius-xl);
   overflow: hidden;
   border: 1px solid var(--border-color);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(28, 77, 141, 0.2), 0 0 0 1px rgba(69, 192, 255, 0.1);
+  border-color: rgba(69, 192, 255, 0.15);
 }
 
 /* 미디어 영역 (이미지 + 비디오 공통) */
@@ -250,7 +268,7 @@
 }
 
 .card:hover .media {
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
 .mediaOverlay {
@@ -266,51 +284,59 @@
 
 .projectNumber {
   position: absolute;
-  top: var(--spacing-lg);
-  left: var(--spacing-lg);
-  font-size: var(--font-size-2xl);
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  font-size: var(--font-size-xl);
   font-weight: 800;
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-dark) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: none;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.card:hover .projectNumber {
+  opacity: 1;
 }
 
 /* 비디오 뱃지 */
 .mediaBadge {
   position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  padding: 4px 10px;
-  background: rgba(28, 77, 141, 0.85);
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  padding: 3px 10px;
+  background: rgba(28, 77, 141, 0.8);
   backdrop-filter: blur(8px);
   border-radius: var(--radius-full);
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(69, 192, 255, 0.15);
 }
 
 /* 카드 콘텐츠 */
 .cardContent {
-  padding: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-xl);
 }
 
 .title {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .description {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   color: var(--text-muted);
   line-height: 1.7;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -318,29 +344,36 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
 .tag {
-  padding: var(--spacing-xs) var(--spacing-md);
-  background: rgba(28, 77, 141, 0.12);
-  border: 1px solid rgba(28, 77, 141, 0.35);
+  padding: 4px var(--spacing-sm);
+  background: rgba(69, 192, 255, 0.06);
+  border: 1px solid rgba(69, 192, 255, 0.18);
   border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+  font-size: 0.7rem;
   font-weight: 500;
-  color: var(--accent-primary);
+  color: rgba(69, 192, 255, 0.85);
+  transition: all var(--transition-fast);
+}
+
+.tag:hover {
+  background: rgba(69, 192, 255, 0.12);
+  border-color: rgba(69, 192, 255, 0.35);
+  color: #45c0ff;
 }
 
 /* 인디케이터 */
 .indicators {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: 6px;
 }
 
 .indicator {
-  width: 32px;
-  height: 4px;
-  background: var(--overlay-light);
+  width: 28px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-full);
   border: none;
   cursor: pointer;
@@ -350,12 +383,13 @@
 }
 
 .indicator:hover {
-  background: rgba(28, 77, 141, 0.4);
+  background: rgba(69, 192, 255, 0.3);
 }
 
 .indicator.active {
-  width: 56px;
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-dark) 100%);
+  width: 48px;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 100%);
+  box-shadow: 0 0 8px rgba(69, 192, 255, 0.3);
 }
 
 .indicatorLabel {
@@ -372,26 +406,31 @@
 }
 
 .counterCurrent {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  color: var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
 }
 
 .counterDivider {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin: 0 2px;
 }
 
 .counterTotal {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--text-muted);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .header {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+    padding-top: var(--spacing-lg);
   }
 
   .cardContainer {
@@ -402,56 +441,61 @@
     border-radius: var(--radius-lg);
   }
 
+  .card:hover {
+    transform: none;
+  }
+
   .mediaWrapper {
     aspect-ratio: 4 / 3;
   }
 
   .projectNumber {
-    top: var(--spacing-md);
-    left: var(--spacing-md);
-    font-size: var(--font-size-xl);
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    font-size: var(--font-size-base);
   }
 
   .mediaBadge {
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    font-size: 0.6rem;
-    padding: 3px 8px;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
+    font-size: 0.55rem;
+    padding: 2px 6px;
   }
 
   .cardContent {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
   }
 
   .title {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
   }
 
   .description {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--spacing-sm);
   }
 
   .indicator {
-    width: 24px;
-    height: 3px;
+    width: 20px;
+    height: 2px;
   }
 
   .indicator.active {
-    width: 40px;
+    width: 36px;
   }
 
   .navBtn {
     opacity: 1;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
 
   .navBtnPrev {
-    left: var(--spacing-sm);
+    left: var(--spacing-xs);
   }
 
   .navBtnNext {
-    right: var(--spacing-sm);
+    right: var(--spacing-xs);
   }
 
   .orb1 {

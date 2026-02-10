@@ -6,15 +6,7 @@ import styles from './ProjectSlider.module.css';
 
 const SLIDE_INTERVAL = 5000;
 
-// 파티클 데이터 (컴포넌트 외부에서 한 번만 생성 — Hero와 동일 구조)
-const particleData = Array.from({ length: 15 }, () => ({
-  left: `${Math.random() * 100}%`,
-  animationDelay: `${Math.random() * 12}s`,
-  animationDuration: `${10 + Math.random() * 15}s`,
-  size: `${2 + Math.random() * 3}px`,
-  opacity: 0.2 + Math.random() * 0.4,
-}));
-
+/** 파티클 데이터 (컴포넌트 외부에서 한 번만 생성 — Hero와 동일 구조) */
 const ProjectSlider = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -31,7 +23,7 @@ const ProjectSlider = () => {
     setActiveIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
   }, []);
 
-  // 키보드 네비게이션
+  /** 키보드 네비게이션 처리 */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') handlePrev();
@@ -41,7 +33,7 @@ const ProjectSlider = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNext, handlePrev]);
 
-  // 자동 슬라이드
+  /** 자동 슬라이드 기능 */
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
@@ -50,7 +42,7 @@ const ProjectSlider = () => {
     return () => clearInterval(interval);
   }, [isPaused, handleNext]);
 
-  // 슬라이드 변경 시 비디오 재생
+  /** 슬라이드 변경 시 비디오 자동 재생 처리 */
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
@@ -61,7 +53,7 @@ const ProjectSlider = () => {
   const currentProject = projects[activeIndex];
   const isVideo = !!currentProject.video;
 
-  // 인접 슬라이드 프리로드 인덱스
+  /** 인접 슬라이드 프리로드 인덱스 계산 */
   const preloadIndices = useMemo(() => {
     const next = (activeIndex + 1) % projects.length;
     const prev = (activeIndex - 1 + projects.length) % projects.length;
@@ -78,29 +70,11 @@ const ProjectSlider = () => {
     <section id="projects" className={`section ${styles.projects}`}>
       <div className={styles.backgroundGradient} />
 
-      {/* 글로우 오브 효과 (Hero와 동일 구조) */}
+      {/* 글로우 오브 효과 */}
       <div className={styles.glowOrbs}>
-        <div className={`${styles.orb} ${styles.orb1}`} />
-        <div className={`${styles.orb} ${styles.orb2}`} />
-        <div className={`${styles.orb} ${styles.orb3}`} />
-      </div>
-
-      {/* 파티클 */}
-      <div className={styles.particles}>
-        {particleData.map((p, i) => (
-          <div
-            key={i}
-            className={styles.particle}
-            style={{
-              left: p.left,
-              animationDelay: p.animationDelay,
-              animationDuration: p.animationDuration,
-              width: p.size,
-              height: p.size,
-              opacity: p.opacity,
-            }}
-          />
-        ))}
+        <div className={`${styles.orb} ${styles.orbPrimary}`} />
+        <div className={`${styles.orb} ${styles.orbSecondary}`} />
+        <div className={`${styles.orb} ${styles.orbAccent}`} />
       </div>
 
       <div className="container">
@@ -129,14 +103,14 @@ const ProjectSlider = () => {
         >
           {/* 좌/우 네비게이션 버튼 */}
           <button
-            className={`${styles.navBtn} ${styles.navBtnPrev}`}
+            className={`${styles.navigationButton} ${styles.prevButton}`}
             onClick={handlePrev}
             aria-label="이전 프로젝트"
           >
             <HiChevronLeft size={24} />
           </button>
           <button
-            className={`${styles.navBtn} ${styles.navBtnNext}`}
+            className={`${styles.navigationButton} ${styles.nextButton}`}
             onClick={handleNext}
             aria-label="다음 프로젝트"
           >
@@ -242,7 +216,7 @@ const ProjectSlider = () => {
         </div>
       </div>
 
-      {/* SVG Gradient Definition */}
+      {/* SVG 그라이언트 */}
       <svg width="0" height="0" className="visually-hidden">
         <defs>
           <linearGradient id="project-icon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">

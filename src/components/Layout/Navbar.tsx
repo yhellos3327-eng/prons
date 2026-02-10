@@ -3,47 +3,46 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
 import styles from './Navbar.module.css';
 
-
-
 const navLinks = [
-  { name: '홈', href: '#home' },
-  { name: '포트폴리오', href: '#projects' },
-  { name: '소개', href: '#about' },
-  { name: '문의하기', href: '#contact' },
+  { name: '홈', id: 'home' },
+  { name: '포트폴리오', id: 'projects' },
+  { name: '소개', id: 'about' },
+  { name: '문의하기', id: 'contact' },
 ];
 
-const Navbar = () => {
+/** 네비게이션 바 Props 인터페이스 */
+interface NavbarProps {
+  onNavigate?: (sectionId: string) => void;
+  currentPage?: string;
+}
+
+const Navbar = ({ onNavigate, currentPage }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    /** 홈 페이지가 아닐 때 스크롤 스타일 표시 */
+    setIsScrolled(currentPage !== 'home');
+  }, [currentPage]);
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // 모바일 메뉴 열릴 때 스크롤 잠금 + ESC 키로 닫기
+  /** 모바일 메뉴 열릴 때 ESC 키로 닫기 처리 */
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
       const handleEsc = (e: KeyboardEvent) => {
         if (e.key === 'Escape') setIsMobileMenuOpen(false);
       };
       window.addEventListener('keydown', handleEsc);
       return () => {
-        document.body.style.overflow = '';
         window.removeEventListener('keydown', handleEsc);
       };
-    } else {
-      document.body.style.overflow = '';
     }
   }, [isMobileMenuOpen]);
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (id: string) => {
     setIsMobileMenuOpen(false);
+    if (onNavigate) {
+      onNavigate(id);
+    }
   };
 
   return (
@@ -54,42 +53,51 @@ const Navbar = () => {
       transition={{ duration: 0.5 }}
     >
       <div className={`container ${styles.navContainer}`}>
-        <a href="#home" className={styles.logo}>
+        <a
+          className={styles.logo}
+          onClick={(e) => { e.preventDefault(); handleLinkClick('home'); }}
+          href="#"
+          style={{ cursor: 'pointer' }}
+        >
           <video
-            src="/video/emoji_logo.webm"
+            src="/video/logo1.webm"
             className={styles.logoIcon}
             autoPlay
             muted
             loop
             playsInline
-            style={{ width: '2em', height: '2em', objectFit: 'contain' }}
+            style={{ width: '4.5em', height: '4.5em', objectFit: 'contain' }}
           />
-          판다디자인
+          <span className={styles.logoText}>
+            <span className={styles.logoPrimaryText}>판다</span><span className={styles.logoSecondaryText}>디자인</span>
+          </span>
         </a>
 
-        {/* Desktop Navigation */}
+        {/* 데스크탑 네비게이션 */}
         <nav className={styles.desktopNav}>
           {navLinks.map((link) => (
             <a
               key={link.name}
-              href={link.href}
-              className={styles.navLink}
+              className={`${styles.navLink} ${currentPage === link.id ? styles.navLinkActive : ''}`}
+              onClick={(e) => { e.preventDefault(); handleLinkClick(link.id); }}
+              href="#"
+              style={{ cursor: 'pointer' }}
             >
               {link.name}
             </a>
           ))}
         </nav>
 
-        {/* Mobile Menu Button */}
+        {/* 모바일 메뉴 버튼 */}
         <button
-          className={styles.mobileMenuBtn}
+          className={styles.mobileMenuToggle}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="메뉴 열기"
         >
           {isMobileMenuOpen ? <HiX size={24} /> : <HiMenuAlt3 size={24} />}
         </button>
 
-        {/* Mobile Navigation */}
+        {/* 모바일 네비게이션 */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <>
@@ -114,9 +122,10 @@ const Navbar = () => {
                 {navLinks.map((link, index) => (
                   <motion.a
                     key={link.name}
-                    href={link.href}
-                    className={styles.mobileNavLink}
-                    onClick={handleLinkClick}
+                    className={`${styles.mobileNavLink} ${currentPage === link.id ? styles.navLinkActive : ''}`}
+                    onClick={(e) => { e.preventDefault(); handleLinkClick(link.id); }}
+                    href="#"
+                    style={{ cursor: 'pointer' }}
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}

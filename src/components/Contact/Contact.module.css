@@ -2,6 +2,7 @@
   position: relative;
   z-index: 2;
   background: var(--bg-secondary);
+  overflow: hidden;
 }
 
 .header {
@@ -17,7 +18,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--text-primary);
+  color: var(--text-muted);
   margin-bottom: var(--spacing-xs);
 }
 
@@ -25,9 +26,8 @@
   fill: url(#contact-icon-gradient);
 }
 
-
 .labelIcon {
-  font-size: 1.1em;
+  font-size: 1em;
 }
 
 .content {
@@ -55,33 +55,51 @@
   cursor: pointer;
   transition: all var(--transition-base);
   width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.telegramBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
 }
 
 .telegramBtn:hover {
   background: #0099e6;
   color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 136, 204, 0.3);
+}
+
+.telegramBtn:hover::before {
+  opacity: 1;
 }
 
 .telegramBtnWrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
 }
 
 .telegramId {
-  font-size: calc(var(--font-size-xs) - 3px);
+  font-size: calc(var(--font-size-xs) - 2px);
   color: var(--text-muted);
-  opacity: 1;
+  opacity: 0.7;
   margin-top: 0;
   font-weight: 300;
   transition: all 0.3s ease;
   cursor: pointer;
+  letter-spacing: 0.05em;
 }
 
 .telegramId:hover {
-  color: #ffffff;
+  color: #0099e6;
+  opacity: 1;
 }
 
 /* 안내 카드 */
@@ -89,7 +107,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
 }
 
 .telegramCard {
@@ -98,21 +116,33 @@
   align-items: center;
   text-align: center;
   padding: var(--spacing-xl);
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-xl);
   gap: var(--spacing-md);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.telegramCard:hover {
+  border-color: rgba(0, 136, 204, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 136, 204, 0.08);
 }
 
 .telegramIconLarge {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: rgba(0, 136, 204, 0.12);
-  border-radius: var(--radius-md);
+  width: 56px;
+  height: 56px;
+  background: rgba(0, 136, 204, 0.1);
+  border-radius: var(--radius-lg);
   color: #0088cc;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.telegramCard:hover .telegramIconLarge {
+  transform: scale(1.05);
+  background: rgba(0, 136, 204, 0.15);
 }
 
 .cardTitle {
@@ -124,29 +154,49 @@
 .cardDesc {
   font-size: var(--font-size-xs);
   color: var(--text-muted);
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .features {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
   justify-content: center;
 }
 
 .featureTag {
-  padding: var(--spacing-xs) var(--spacing-md);
-  background: rgba(0, 136, 204, 0.1);
-  border: 1px solid rgba(0, 136, 204, 0.25);
+  padding: 4px var(--spacing-sm);
+  background: rgba(0, 136, 204, 0.06);
+  border: 1px solid rgba(0, 136, 204, 0.18);
   border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+  font-size: 0.7rem;
   font-weight: 500;
+  color: rgba(0, 153, 230, 0.85);
+  transition: all var(--transition-fast);
+}
+
+.featureTag:hover {
+  background: rgba(0, 136, 204, 0.12);
+  border-color: rgba(0, 136, 204, 0.35);
   color: #0099e6;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .telegramCard {
-    padding: var(--spacing-xl);
+    padding: var(--spacing-lg);
+  }
+
+  .infoSection {
+    max-width: 100%;
+  }
+
+  .telegramIconLarge {
+    width: 48px;
+    height: 48px;
+  }
+
+  .cardTitle {
+    font-size: var(--font-size-base);
   }
 }

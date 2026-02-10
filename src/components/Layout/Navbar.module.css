@@ -30,26 +30,50 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-primary);
-  transition: transform var(--transition-fast);
+  transition: transform var(--transition-fast), filter var(--transition-fast);
 }
 
 .logo:hover {
-  transform: scale(1.02);
+  transform: scale(1.03);
   color: var(--text-primary);
+  filter: drop-shadow(0 0 12px rgba(69, 192, 255, 0.2));
 }
 
 .logoIcon {
-  font-size: 1.8em;
-  color: var(--accent-primary);
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
   transition: transform var(--transition-fast);
+  filter: drop-shadow(0 2px 6px rgba(69, 192, 255, 0.15));
 }
 
 .logo:hover .logoIcon {
-  transform: rotate(-10deg) scale(1.1);
+  transform: scale(1.08);
 }
 
-.logoAccent {
-  color: var(--accent-primary);
+.logoText {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.logoPanda {
+  background: linear-gradient(135deg, #09bbfe 0%, #5a42ec 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  font-weight: 800;
+}
+
+.logoDesign {
+  background: linear-gradient(135deg, #e0e0e0 0%, #888888 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  font-weight: 500;
 }
 
 /* Desktop Navigation */
@@ -77,27 +101,43 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 100%);
   transition: width var(--transition-base);
 }
 
 .navLink:hover {
-  color: var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* fallback for underline if text becomes transparent */
+  text-decoration: none;
 }
 
 .navLink:hover::after {
   width: 100%;
 }
 
+.navLinkActive {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navLinkActive::after {
+  width: 100% !important;
+}
+
 /* Mobile Menu Button */
-.mobileMenuBtn {
+.mobileMenuToggle {
   display: none;
   color: var(--text-primary);
   padding: var(--spacing-sm);
   transition: color var(--transition-fast);
 }
 
-.mobileMenuBtn:hover {
+.mobileMenuToggle:hover {
   color: var(--accent-primary);
 }
 
@@ -146,7 +186,7 @@
     display: none;
   }
 
-  .mobileMenuBtn {
+  .mobileMenuToggle {
     display: block;
   }
 
