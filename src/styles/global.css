@@ -1,26 +1,5 @@
 @import './variables.css';
 
-@font-face {
-  font-family: 'LineSeed';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Th.woff2') format('woff2');
-  font-weight: 100;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'LineSeed';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Rg.woff2') format('woff2');
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'LineSeed';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
-  font-weight: 700;
-  font-display: swap;
-}
-
 /* 초기화 및 기본 스타일 */
 *,
 *::before,
