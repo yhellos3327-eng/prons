@@ -1,13 +1,5 @@
-export interface Project {
-  id: number;
-  title: string;
-  description: string;
-  image?: string;
-  video?: string;
-  tags: string[];
-  liveUrl?: string;
-  behanceUrl?: string;
-}
+import { type Project } from '../schemas';
+export type { Project };
 
 export const projects: Project[] = [
   {

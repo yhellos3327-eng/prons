@@ -1,3 +1,6 @@
+import * as v from 'valibot';
+import { ProjectListSchema, LoginResponseSchema, UploadResponseSchema } from '../schemas';
+
 export const API_ENDPOINTS = {
     AUTH: '/api/auth',
     CONFIG: '/api/config',
@@ -14,8 +17,10 @@ export const apiService = {
                 'x-admin-password': password,
             },
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Login failed');
+        const json = await response.json();
+        if (!response.ok) throw new Error(json.error || 'Login failed');
+        
+        const data = v.parse(LoginResponseSchema, json);
         return data.token;
     },
 
@@ -26,7 +31,8 @@ export const apiService = {
             
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
-                return await response.json();
+                const json = await response.json();
+                return v.parse(ProjectListSchema, json);
             }
             return null;
         } catch (error) {
@@ -44,8 +50,10 @@ export const apiService = {
             },
             body: JSON.stringify(data),
         });
+        const json = await response.json();
         if (!response.ok) throw new Error('Failed to save config');
-        return response.json();
+        
+        return v.parse(ProjectListSchema, json);
     },
 
     uploadFile: async (file: File, token: string) => {
@@ -63,7 +71,8 @@ export const apiService = {
         });
 
         if (!response.ok) throw new Error('Upload failed');
-        const data = await response.json();
+        const json = await response.json();
+        const data = v.parse(UploadResponseSchema, json);
         return data.url;
     }
 };
