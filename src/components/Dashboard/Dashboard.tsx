@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Reorder } from 'framer-motion';
 import { HiPlus, HiRefresh, HiSave, HiLogout } from 'react-icons/hi';
 import { useProjectData } from '../../hooks/useProjectData';
@@ -10,7 +10,9 @@ import styles from './Dashboard.module.css';
 
 // R2 업로드 API 호출 함수
 const uploadFile = async (file: File, password: string): Promise<string> => {
-    const filename = `${Date.now()}-${file.name}`;
+    // 한글 및 특수문자 처리를 위해 파일명 안전하게 변환
+    const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filename = `${Date.now()}-${sanitizedFilename}`;
     const encodedFilename = encodeURIComponent(filename);
 
     const response = await fetch(`/api/upload?filename=${encodedFilename}`, {
@@ -34,13 +36,17 @@ export default function Dashboard() {
     const { projects, isLoading, saveProjects, refetch } = useProjectData();
     const { addToast } = useToast();
     const [password, setPassword] = useState(sessionStorage.getItem('admin_password') || '');
-    const [localProjects, setLocalProjects] = useState<Project[]>(projects);
+    const [localProjects, setLocalProjects] = useState<Project[]>([]);
     const [isSaving, setIsSaving] = useState(false);
+    const isInitialized = useRef(false);
 
-    // 초기 데이터 로드 시 로컬 상태 동기화
-    if (projects !== localProjects && !isSaving && localProjects.length === 0 && projects.length > 0) {
-        setLocalProjects(projects);
-    }
+    // 서버 데이터가 로드되면 로컬 상태에 동기화
+    useEffect(() => {
+        if (!isLoading && !isSaving) {
+            setLocalProjects(projects);
+            isInitialized.current = true;
+        }
+    }, [projects, isLoading]);
 
     const handleLogin = (pwd: string) => {
         sessionStorage.setItem('admin_password', pwd);

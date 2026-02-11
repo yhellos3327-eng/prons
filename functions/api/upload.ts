@@ -27,7 +27,7 @@ export const onRequestPost: PagesFunction = async (context) => {
 
     return new Response(JSON.stringify({ 
       success: true, 
-      url: `/api/media/${filename}`,
+      url: `/api/media/${encodeURIComponent(filename)}`,
       filename 
     }), {
       headers: { 'Content-Type': 'application/json' },

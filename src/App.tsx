@@ -39,9 +39,13 @@ function App() {
       setIsDashboard(isDash);
 
       if (isDash) {
+        document.documentElement.style.overflow = 'auto';
+        document.documentElement.style.height = 'auto';
         document.body.style.overflow = 'auto';
         document.body.style.height = 'auto';
       } else {
+        document.documentElement.style.overflow = 'hidden';
+        document.documentElement.style.height = '100vh';
         document.body.style.overflow = 'hidden';
         document.body.style.height = '100vh';
       }

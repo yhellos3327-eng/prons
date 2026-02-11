@@ -7,21 +7,36 @@ import styles from './ProjectSlider.module.css';
 const SLIDE_INTERVAL = 5000;
 
 const ProjectSlider = () => {
-  const { projects } = useProjectData();
+  const { projects, isLoading } = useProjectData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [direction, setDirection] = useState(1);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // 미디어가 있는 프로젝트만 필터링
+  const visibleProjects = useMemo(() => projects.filter(p => p.video || p.image), [projects]);
+
+  // activeIndex가 범위를 초과하면 보정
+  const safeIndex = visibleProjects.length > 0 ? activeIndex % visibleProjects.length : 0;
+
+  const currentProject = visibleProjects[safeIndex];
+  const isVideo = !!currentProject?.video;
+
   const handleNext = useCallback(() => {
     setDirection(1);
-    setActiveIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
-  }, [projects.length]);
+    setActiveIndex((prev) => {
+      const len = visibleProjects.length;
+      return len > 0 ? (prev + 1) % len : 0;
+    });
+  }, [visibleProjects.length]);
 
   const handlePrev = useCallback(() => {
     setDirection(-1);
-    setActiveIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
-  }, []);
+    setActiveIndex((prev) => {
+      const len = visibleProjects.length;
+      return len > 0 ? (prev - 1 + len) % len : 0;
+    });
+  }, [visibleProjects.length]);
 
   /** 키보드 네비게이션 처리 */
   useEffect(() => {
@@ -50,15 +65,13 @@ const ProjectSlider = () => {
     }
   }, [activeIndex]);
 
-  const currentProject = projects[activeIndex];
-  const isVideo = !!currentProject.video;
-
   /** 인접 슬라이드 프리로드 인덱스 계산 */
   const preloadIndices = useMemo(() => {
-    const next = (activeIndex + 1) % projects.length;
-    const prev = (activeIndex - 1 + projects.length) % projects.length;
+    if (visibleProjects.length <= 1) return [];
+    const next = (safeIndex + 1) % visibleProjects.length;
+    const prev = (safeIndex - 1 + visibleProjects.length) % visibleProjects.length;
     return [prev, next];
-  }, [activeIndex]);
+  }, [safeIndex, visibleProjects.length]);
 
   const slideVariants = {
     enter: (dir: number) => ({ opacity: 0, x: dir > 0 ? 60 : -60 }),
@@ -97,6 +110,108 @@ const ProjectSlider = () => {
     touchStartX.current = 0;
     touchEndX.current = 0;
   };
+
+  if (isLoading) {
+    return (
+      <section id="projects" className={`section ${styles.projects}`}>
+        <div className={styles.backgroundGradient} />
+        <div className={styles.glowOrbs}>
+          <div className={`${styles.orb} ${styles.orbPrimary}`} />
+          <div className={`${styles.orb} ${styles.orbSecondary}`} />
+          <div className={`${styles.orb} ${styles.orbAccent}`} />
+        </div>
+        <div className="container">
+          <motion.div
+            className={styles.header}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className={styles.label}>
+              <HiPhotograph className={styles.labelIcon} />
+              Portfolio
+            </span>
+            <h2 className={styles.sectionTitle}>
+              주요 <span className="accent">작업물</span>
+            </h2>
+          </motion.div>
+          <div className={styles.sliderContainer}>
+            <div className={styles.cardContainer}>
+              <div className={styles.skeletonCard}>
+                <div className={`${styles.skeletonMedia} ${styles.skeletonLine}`} />
+                <div className={styles.skeletonContent}>
+                  <div className={`${styles.skeletonLine} ${styles.skeletonTitle}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonDesc}`} />
+                  <div className={`${styles.skeletonLine} ${styles.skeletonDesc}`} />
+                  <div className={styles.skeletonTagsRow}>
+                    <div className={styles.skeletonTag} />
+                    <div className={styles.skeletonTag} />
+                    <div className={styles.skeletonTag} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.skeletonIndicators}>
+              <div className={styles.skeletonIndicatorDot} />
+              <div className={styles.skeletonIndicatorDot} />
+              <div className={styles.skeletonIndicatorDot} />
+              <div className={styles.skeletonIndicatorDot} />
+            </div>
+            <div className={styles.skeletonCounter}>
+              <div className={styles.skeletonCounterBlock} />
+              <span className={styles.skeletonCounterDivider}>/</span>
+              <div className={styles.skeletonCounterBlock} />
+            </div>
+          </div>
+        </div>
+        <svg width="0" height="0" className="visually-hidden">
+          <defs>
+            <linearGradient id="project-icon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style={{ stopColor: '#dcdcdd' }} />
+              <stop offset="100%" style={{ stopColor: '#626262' }} />
+            </linearGradient>
+          </defs>
+        </svg>
+      </section>
+    );
+  }
+
+  if (visibleProjects.length === 0) {
+    return (
+      <section id="projects" className={`section ${styles.projects}`}>
+        <div className={styles.backgroundGradient} />
+        <div className="container">
+          <motion.div
+            className={styles.header}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className={styles.label}>
+              <HiPhotograph className={styles.labelIcon} />
+              Portfolio
+            </span>
+            <h2 className={styles.sectionTitle}>
+              주요 <span className="accent">작업물</span>
+            </h2>
+          </motion.div>
+          <div className={styles.sliderContainer} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.1rem' }}>등록된 작업물이 없습니다.</p>
+          </div>
+        </div>
+        <svg width="0" height="0" className="visually-hidden">
+          <defs>
+            <linearGradient id="project-icon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style={{ stopColor: '#dcdcdd' }} />
+              <stop offset="100%" style={{ stopColor: '#626262' }} />
+            </linearGradient>
+          </defs>
+        </svg>
+      </section>
+    );
+  }
 
   return (
     <section id="projects" className={`section ${styles.projects} `}>
@@ -154,7 +269,7 @@ const ProjectSlider = () => {
           <div className={styles.cardContainer}>
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
-                key={activeIndex}
+                key={safeIndex}
                 className={styles.card}
                 custom={direction}
                 variants={slideVariants}
@@ -185,7 +300,7 @@ const ProjectSlider = () => {
                   )}
                   <div className={styles.mediaOverlay} />
                   <span className={styles.projectNumber}>
-                    {String(activeIndex + 1).padStart(2, '0')}
+                    {String(safeIndex + 1).padStart(2, '0')}
                   </span>
                   {isVideo && (
                     <span className={styles.mediaBadge}>▶ VIDEO</span>
@@ -209,7 +324,8 @@ const ProjectSlider = () => {
           {/* 인접 슬라이드 프리로드 */}
           <div style={{ display: 'none' }}>
             {preloadIndices.map((i) => {
-              const p = projects[i];
+              const p = visibleProjects[i];
+              if (!p) return null;
               if (p.video) return <link key={i} rel="preload" as="video" href={p.video} />;
               if (p.image) return <link key={i} rel="preload" as="image" href={p.image} />;
               return null;
@@ -218,13 +334,13 @@ const ProjectSlider = () => {
 
           {/* 인디케이터 */}
           <div className={styles.indicators}>
-            {projects.map((project, index) => (
+            {visibleProjects.map((project, index) => (
               <button
                 key={index}
-                className={`${styles.indicator} ${index === activeIndex ? styles.active : ''
+                className={`${styles.indicator} ${index === safeIndex ? styles.active : ''
                   } `}
                 onClick={() => {
-                  setDirection(index > activeIndex ? 1 : -1);
+                  setDirection(index > safeIndex ? 1 : -1);
                   setActiveIndex(index);
                 }}
                 aria-label={`${project.title}로 이동`}
@@ -239,11 +355,11 @@ const ProjectSlider = () => {
           {/* 프로젝트 카운터 */}
           <div className={styles.counter}>
             <span className={styles.counterCurrent}>
-              {String(activeIndex + 1).padStart(2, '0')}
+              {String(safeIndex + 1).padStart(2, '0')}
             </span>
             <span className={styles.counterDivider}>/</span>
             <span className={styles.counterTotal}>
-              {String(projects.length).padStart(2, '0')}
+              {String(visibleProjects.length).padStart(2, '0')}
             </span>
           </div>
         </div>

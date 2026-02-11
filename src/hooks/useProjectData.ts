@@ -3,7 +3,7 @@ import { projects as defaultProjects } from '../data/projects';
 import type { Project } from '../data/projects';
 
 export function useProjectData() {
-  const [projects, setProjects] = useState<Project[]>(defaultProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,17 +12,21 @@ export function useProjectData() {
       setIsLoading(true);
       // API 호출 - 실패 시 기본값 사용 (로컬 개발 환경 등)
       try {
-        const response = await fetch('/api/config');
+        const response = await fetch('/api/config', { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
-          if (Array.isArray(data) && data.length > 0) {
+          if (Array.isArray(data)) {
             setProjects(data);
+          } else {
+            setProjects(defaultProjects);
           }
         } else {
-             console.warn('Failed to fetch config, using default projects');
+          console.warn('Failed to fetch config, using default projects');
+          setProjects(defaultProjects);
         }
       } catch (err) {
         console.warn('API fetch error, using default projects:', err);
+        setProjects(defaultProjects);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
