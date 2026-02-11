@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { projects as defaultProjects } from '../data/projects';
 import type { Project } from '../data/projects';
 import { apiService } from '../services/api';
@@ -42,3 +42,8 @@ export const useProjectData = () => {
     isSaving: saveMutation.isPending
   };
 }
+
+export const useSuspenseProjectData = () => {
+  const { data: projects } = useSuspenseQuery(projectQueryOptions);
+  return { projects };
+};

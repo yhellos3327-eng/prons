@@ -1,7 +1,9 @@
-import { Hero } from '../components/Hero';
-import { ProjectSlider } from '../components/Projects';
-import { About } from '../components/About';
-import { Contact } from '../components/Contact';
+import { lazy } from 'react';
+
+const Hero = lazy(() => import('../components/Hero/Hero'));
+const ProjectSlider = lazy(() => import('../components/Projects/ProjectSlider'));
+const About = lazy(() => import('../components/About/About'));
+const Contact = lazy(() => import('../components/Contact/Contact'));
 
 export interface PageConfig {
     id: string;

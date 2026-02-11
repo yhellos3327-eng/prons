@@ -4,7 +4,8 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider } from './components/UI/Toast';
 import App, { MainPage } from './App';
-import { Dashboard } from './components/Dashboard';
+import { projectQueryOptions } from './hooks/useProjectData';
+import ErrorPage from './components/UI/ErrorPage';
 import './styles/global.css';
 
 const queryClient = new QueryClient({
@@ -27,14 +28,16 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
         element: <MainPage />,
+        loader: () => queryClient.ensureQueryData(projectQueryOptions),
       },
       {
         path: "dashboard",
-        element: <Dashboard />,
+        lazy: () => import('./components/Dashboard/Dashboard').then(module => ({ Component: module.default })),
       },
       {
         path: "*",

@@ -20,9 +20,19 @@ export const apiService = {
     },
 
     fetchConfig: async () => {
-        const response = await fetch(API_ENDPOINTS.CONFIG, { cache: 'no-store' });
-        if (!response.ok) throw new Error('Failed to fetch config');
-        return response.json();
+        try {
+            const response = await fetch(API_ENDPOINTS.CONFIG, { cache: 'no-store' });
+            if (!response.ok) return null;
+            
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return await response.json();
+            }
+            return null;
+        } catch (error) {
+            console.error('API fetchConfig error:', error);
+            return null;
+        }
     },
 
     saveConfig: async (data: any, token: string) => {

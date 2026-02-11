@@ -6,7 +6,7 @@ const TRANSITION_COOLDOWN = 800;
 export const usePageNavigation = (totalPages: number, isEnabled: boolean = true) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
-  const isTransitioning = useRef(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const lastTransition = useRef(0);
 
   const goToPage = useCallback((page: number, pushState: boolean = true) => {
@@ -15,17 +15,17 @@ export const usePageNavigation = (totalPages: number, isEnabled: boolean = true)
     if (page < 0 || page >= totalPages) return;
     if (page === currentPage) return;
 
-    isTransitioning.current = true;
+    setIsTransitioning(true);
     lastTransition.current = now;
     setDirection(page > currentPage ? 1 : -1);
     setCurrentPage(page);
 
     if (pushState) {
-        window.history.pushState({ pageIndex: page }, '', `#section-${page}`);
+        window.history.pushState({ pageIndex: page }, '', window.location.pathname + window.location.search);
     }
 
     setTimeout(() => {
-      isTransitioning.current = false;
+      setIsTransitioning(false);
     }, TRANSITION_COOLDOWN);
   }, [currentPage, totalPages]);
 
@@ -40,17 +40,6 @@ export const usePageNavigation = (totalPages: number, isEnabled: boolean = true)
       return () => window.removeEventListener('popstate', handlePopState);
   }, [goToPage]);
 
-  // 초기 로드 시 해시에 따른 페이지 이동
-  useEffect(() => {
-      const hash = window.location.hash;
-      const match = hash.match(/#section-(\d+)/);
-      if (match) {
-          const index = parseInt(match[1], 10);
-          if (index >= 0 && index < totalPages) {
-              setCurrentPage(index);
-          }
-      }
-  }, [totalPages]);
 
   const goNext = useCallback(() => {
     if (currentPage >= totalPages - 1) return;
@@ -71,7 +60,7 @@ export const usePageNavigation = (totalPages: number, isEnabled: boolean = true)
       onPrev: goPrev,
       onHome: goHome,
       onEnd: goEnd,
-      disabled: !isEnabled || isTransitioning.current
+      disabled: !isEnabled || isTransitioning
   });
 
   return { currentPage, direction, goToPage, goNext, goPrev };

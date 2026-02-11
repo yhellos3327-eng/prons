@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiPhotograph, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
-import { useProjectData } from '../../hooks/useProjectData';
+import { useSuspenseProjectData } from '../../hooks/useProjectData';
 import styles from './ProjectSlider.module.css';
 
 const SLIDE_INTERVAL = 5000;
 
 const ProjectSlider = () => {
-  const { projects, isLoading } = useProjectData();
+  const { projects } = useSuspenseProjectData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [direction, setDirection] = useState(1);
@@ -110,72 +110,6 @@ const ProjectSlider = () => {
     touchStartX.current = 0;
     touchEndX.current = 0;
   };
-
-  if (isLoading) {
-    return (
-      <section id="projects" className={`section ${styles.projects}`}>
-        <div className={styles.backgroundGradient} />
-        <div className={styles.glowOrbs}>
-          <div className={`${styles.orb} ${styles.orbPrimary}`} />
-          <div className={`${styles.orb} ${styles.orbSecondary}`} />
-          <div className={`${styles.orb} ${styles.orbAccent}`} />
-        </div>
-        <div className="container">
-          <motion.div
-            className={styles.header}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className={styles.label}>
-              <HiPhotograph className={styles.labelIcon} />
-              Portfolio
-            </span>
-            <h2 className={styles.sectionTitle}>
-              주요 <span className="accent">작업물</span>
-            </h2>
-          </motion.div>
-          <div className={styles.sliderContainer}>
-            <div className={styles.cardContainer}>
-              <div className={styles.skeletonCard}>
-                <div className={`${styles.skeletonMedia} ${styles.skeletonLine}`} />
-                <div className={styles.skeletonContent}>
-                  <div className={`${styles.skeletonLine} ${styles.skeletonTitle}`} />
-                  <div className={`${styles.skeletonLine} ${styles.skeletonDesc}`} />
-                  <div className={`${styles.skeletonLine} ${styles.skeletonDesc}`} />
-                  <div className={styles.skeletonTagsRow}>
-                    <div className={styles.skeletonTag} />
-                    <div className={styles.skeletonTag} />
-                    <div className={styles.skeletonTag} />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className={styles.skeletonIndicators}>
-              <div className={styles.skeletonIndicatorDot} />
-              <div className={styles.skeletonIndicatorDot} />
-              <div className={styles.skeletonIndicatorDot} />
-              <div className={styles.skeletonIndicatorDot} />
-            </div>
-            <div className={styles.skeletonCounter}>
-              <div className={styles.skeletonCounterBlock} />
-              <span className={styles.skeletonCounterDivider}>/</span>
-              <div className={styles.skeletonCounterBlock} />
-            </div>
-          </div>
-        </div>
-        <svg width="0" height="0" className="visually-hidden">
-          <defs>
-            <linearGradient id="project-icon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style={{ stopColor: '#dcdcdd' }} />
-              <stop offset="100%" style={{ stopColor: '#626262' }} />
-            </linearGradient>
-          </defs>
-        </svg>
-      </section>
-    );
-  }
 
   if (visibleProjects.length === 0) {
     return (

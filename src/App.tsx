@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, Suspense } from 'react';
 import { Outlet } from 'react-router';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence, LazyMotion, domMax } from 'framer-motion';
 import { Navbar, Footer } from './components/Layout';
 import { usePageNavigation } from './hooks/usePageNavigation';
 import { APP_PAGES } from './config/pages';
@@ -23,11 +23,11 @@ export const MainPage = () => {
   const CurrentComponent = APP_PAGES[currentPage].component;
 
   return (
-    <>
+    <LazyMotion features={domMax}>
       <Navbar onNavigate={handleNavClick} currentPage={APP_PAGES[currentPage].id} />
       <main style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={currentPage}
             variants={pageVariants}
             initial="enter"
@@ -36,8 +36,10 @@ export const MainPage = () => {
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             style={{ position: 'absolute', inset: 0 }}
           >
-            <CurrentComponent onNavigate={handleNavClick} />
-          </motion.div>
+            <Suspense fallback={null}>
+              <CurrentComponent onNavigate={handleNavClick} />
+            </Suspense>
+          </m.div>
         </AnimatePresence>
       </main>
       {currentPage === APP_PAGES.length - 1 && <Footer />}
@@ -52,7 +54,7 @@ export const MainPage = () => {
           />
         ))}
       </div>
-    </>
+    </LazyMotion>
   );
 }
 
