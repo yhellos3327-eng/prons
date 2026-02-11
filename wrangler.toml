@@ -1,6 +1,6 @@
 name = "portfolio"
 compatibility_date = "2024-01-01"
-pages_build_output_dir = "dist"
+# pages_build_output_dir = "dist"
 
 [[r2_buckets]]
 binding = "PORTFOLIO_BUCKET"
@@ -10,4 +10,4 @@ preview_bucket_name = "pandadesign-preview"
 [[d1_databases]]
 binding = "DB"
 database_name = "pandadesign-db"
-database_id = "9bac4447-8ecb-4122-88c2-6a0613a1b285"
+database_id = "d86d5a37-40de-4f1a-bccb-2ed73be01033"
