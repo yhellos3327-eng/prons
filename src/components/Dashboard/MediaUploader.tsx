@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { HiCloudUpload } from 'react-icons/hi';
+import { HiPhotograph, HiVideoCamera } from 'react-icons/hi';
 import styles from './Dashboard.module.css';
 
 interface MediaUploaderProps {
@@ -46,6 +46,8 @@ export const MediaUploader = ({ type, currentUrl, onUpload, onUrlChange }: Media
         }
     };
 
+    const TypeIcon = type === 'image' ? HiPhotograph : HiVideoCamera;
+
     return (
         <div className={styles.uploaderContainer}>
             <div className={styles.urlInputWrapper}>
@@ -76,11 +78,14 @@ export const MediaUploader = ({ type, currentUrl, onUpload, onUrlChange }: Media
                 {isUploading ? (
                     <div className={styles.uploadingState}>
                         <div className={styles.spinner} />
-                        <span>Uploading...</span>
+                        <span>Uploading {type}...</span>
+                        <div className={styles.uploadProgress}>
+                            <div className={styles.uploadProgressBar} />
+                        </div>
                     </div>
                 ) : (
                     <div className={styles.placeholderState}>
-                        <HiCloudUpload size={24} />
+                        <TypeIcon size={24} />
                         <span>Click or Drag to Upload {type}</span>
                     </div>
                 )}

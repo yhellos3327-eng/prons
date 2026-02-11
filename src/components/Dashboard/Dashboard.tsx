@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Reorder } from 'framer-motion';
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus, HiRefresh, HiSave, HiLogout } from 'react-icons/hi';
 import { useProjectData } from '../../hooks/useProjectData';
 import type { Project } from '../../data/projects';
 import { Login } from './Login';
@@ -109,7 +109,24 @@ export default function Dashboard() {
     if (isLoading) {
         return (
             <div className={styles.dashboard}>
-                <div className={styles.loadingSpinner}>로딩 중...</div>
+                <header className={styles.header}>
+                    <h1 className={styles.title}>미디어 대시보드</h1>
+                </header>
+                <div className={styles.loadingContainer}>
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className={styles.skeletonCard}>
+                            <div className={styles.skeletonHeader} />
+                            <div className={styles.skeletonBody}>
+                                <div className={styles.skeletonPreview} />
+                                <div className={styles.skeletonContent}>
+                                    <div className={styles.skeletonLine} />
+                                    <div className={styles.skeletonLine} />
+                                    <div className={styles.skeletonLine} />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
@@ -119,37 +136,77 @@ export default function Dashboard() {
             <header className={styles.header}>
                 <h1 className={styles.title}>미디어 대시보드</h1>
                 <div className={styles.actions}>
-                    <button className={styles.button} onClick={handleAddProject}>
-                        <HiPlus style={{ marginRight: '5px' }} /> 프로젝트 추가
+                    <button className={`${styles.button} ${styles.buttonSuccess}`} onClick={handleAddProject}>
+                        <HiPlus /> 프로젝트 추가
                     </button>
                     <button className={`${styles.button} ${styles.buttonSecondary}`} onClick={() => refetch()}>
-                        새로고침
+                        <HiRefresh /> 새로고침
                     </button>
-                    <button className={styles.button} onClick={handleSave} disabled={isSaving}>
-                        {isSaving ? '저장 중...' : '변경사항 저장'}
+                    <button className={`${styles.button} ${styles.buttonPrimary}`} onClick={handleSave} disabled={isSaving}>
+                        <HiSave /> {isSaving ? '저장 중...' : '변경사항 저장'}
                     </button>
                     <button className={`${styles.button} ${styles.buttonSecondary}`} onClick={handleLogout}>
-                        로그아웃
+                        <HiLogout /> 로그아웃
                     </button>
                 </div>
             </header>
 
-            <Reorder.Group
-                axis="y"
-                values={localProjects}
-                onReorder={setLocalProjects}
-                className={styles.grid}
-            >
-                {localProjects.map((project) => (
-                    <ProjectCard
-                        key={project.id}
-                        project={project}
-                        onUpdate={handleUpdate}
-                        onUpload={handleFileUpload}
-                        onDelete={handleDelete}
-                    />
-                ))}
-            </Reorder.Group>
+            {localProjects.length > 0 && (
+                <div className={styles.statsBar}>
+                    <div className={styles.statCard}>
+                        <div className={styles.statLabel}>Total Projects</div>
+                        <div className={styles.statValue}>{localProjects.length}</div>
+                    </div>
+                    <div className={styles.statCard}>
+                        <div className={styles.statLabel}>With Video</div>
+                        <div className={styles.statValue}>
+                            {localProjects.filter((p) => p.video).length}
+                        </div>
+                    </div>
+                    <div className={styles.statCard}>
+                        <div className={styles.statLabel}>With Image</div>
+                        <div className={styles.statValue}>
+                            {localProjects.filter((p) => p.image).length}
+                        </div>
+                    </div>
+                    <div className={styles.statCard}>
+                        <div className={styles.statLabel}>Total Tags</div>
+                        <div className={styles.statValue}>
+                            {new Set(localProjects.flatMap((p) => p.tags)).size}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {localProjects.length === 0 ? (
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>
+                        <HiPlus size={64} />
+                    </div>
+                    <h2 className={styles.emptyTitle}>프로젝트가 없습니다</h2>
+                    <p className={styles.emptyDescription}>
+                        새 프로젝트를 추가하여 포트폴리오를 관리하세요.
+                    </p>
+                </div>
+            ) : (
+                <Reorder.Group
+                    axis="y"
+                    values={localProjects}
+                    onReorder={setLocalProjects}
+                    className={styles.grid}
+                >
+                    {localProjects.map((project, index) => (
+                        <ProjectCard
+                            key={project.id}
+                            project={project}
+                            index={index}
+                            onUpdate={handleUpdate}
+                            onUpload={handleFileUpload}
+                            onDelete={handleDelete}
+                        />
+                    ))}
+                </Reorder.Group>
+            )}
         </div>
     );
 }

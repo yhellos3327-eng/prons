@@ -49,6 +49,7 @@ export const Login = ({ onLogin }: LoginProps) => {
             <div className={styles.loginBackground}>
                 <div className={`${styles.orb} ${styles.orb1}`} />
                 <div className={`${styles.orb} ${styles.orb2}`} />
+                <div className={`${styles.orb} ${styles.orb3}`} />
             </div>
 
             <motion.div
