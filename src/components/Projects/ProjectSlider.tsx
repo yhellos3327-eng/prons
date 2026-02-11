@@ -310,7 +310,7 @@ const ProjectSlider = () => {
                   <h3 className={styles.title}>{currentProject.title}</h3>
                   <p className={styles.description}>{currentProject.description}</p>
                   <div className={styles.tags}>
-                    {currentProject.tags.map((tag) => (
+                    {currentProject.tags?.map((tag: string) => (
                       <span key={tag} className={styles.tag}>
                         {tag}
                       </span>
