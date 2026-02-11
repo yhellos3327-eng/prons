@@ -30,6 +30,13 @@
   box-sizing: border-box;
 }
 
+/* 대시보드 활성화 시 전체 스크롤 허용 */
+body.dashboard-active,
+body.dashboard-active html {
+  overflow: auto !important;
+  height: auto !important;
+}
+
 html {
   font-size: 16px;
   overflow: hidden;

@@ -4,7 +4,7 @@ import { HiLockClosed } from 'react-icons/hi';
 import styles from './Dashboard.module.css';
 
 interface LoginProps {
-    onLogin: (password: string) => void;
+    onLogin: (token: string) => void;
 }
 
 export const Login = ({ onLogin }: LoginProps) => {
@@ -31,10 +31,12 @@ export const Login = ({ onLogin }: LoginProps) => {
                 },
             });
 
-            if (response.ok) {
-                onLogin(password);
+            const data = await response.json();
+
+            if (response.ok && data.token) {
+                onLogin(data.token);
             } else {
-                setError('비밀번호가 일치하지 않습니다.');
+                setError(data.error || '비밀번호가 일치하지 않습니다.');
             }
         } catch (err) {
             setError('로그인 확인 중 오류가 발생했습니다.');

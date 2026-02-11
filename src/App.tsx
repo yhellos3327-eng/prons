@@ -1,75 +1,30 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
+import { Outlet } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar, Footer } from './components/Layout';
-import { Hero } from './components/Hero';
-import { ProjectSlider } from './components/Projects';
-import { About } from './components/About';
-import { Contact } from './components/Contact';
-import { Dashboard } from './components/Dashboard';
 import { usePageNavigation } from './hooks/usePageNavigation';
+import { APP_PAGES } from './config/pages';
 import './styles/global.css';
 
-const pages = [
-  { id: 'home', component: Hero },
-  { id: 'projects', component: ProjectSlider },
-  { id: 'about', component: About },
-  { id: 'contact', component: Contact },
-];
-
 const pageVariants = {
-  enter: {
-    opacity: 0,
-  },
-  center: {
-    opacity: 1,
-  },
-  exit: {
-    opacity: 0,
-  },
+  enter: { opacity: 0 },
+  center: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
-function App() {
-  const [isDashboard, setIsDashboard] = useState(false);
-  const { currentPage, goToPage } = usePageNavigation(pages.length);
-
-  useEffect(() => {
-    const checkDashboard = () => {
-      const params = new URLSearchParams(window.location.search);
-      const isDash = params.get('page') === 'dashboard';
-      setIsDashboard(isDash);
-
-      if (isDash) {
-        document.documentElement.style.overflow = 'auto';
-        document.documentElement.style.height = 'auto';
-        document.body.style.overflow = 'auto';
-        document.body.style.height = 'auto';
-      } else {
-        document.documentElement.style.overflow = 'hidden';
-        document.documentElement.style.height = '100vh';
-        document.body.style.overflow = 'hidden';
-        document.body.style.height = '100vh';
-      }
-    };
-
-    checkDashboard();
-    window.addEventListener('popstate', checkDashboard);
-    return () => window.removeEventListener('popstate', checkDashboard);
-  }, []);
-
-  const CurrentComponent = pages[currentPage].component;
+export const MainPage = () => {
+  const { currentPage, goToPage } = usePageNavigation(APP_PAGES.length);
 
   const handleNavClick = useCallback((sectionId: string) => {
-    const index = pages.findIndex(p => p.id === sectionId);
+    const index = APP_PAGES.findIndex(p => p.id === sectionId);
     if (index !== -1) goToPage(index);
   }, [goToPage]);
 
-  if (isDashboard) {
-    return <Dashboard />;
-  }
+  const CurrentComponent = APP_PAGES[currentPage].component;
 
   return (
     <>
-      <Navbar onNavigate={handleNavClick} currentPage={pages[currentPage].id} />
+      <Navbar onNavigate={handleNavClick} currentPage={APP_PAGES[currentPage].id} />
       <main style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
         <AnimatePresence mode="wait">
           <motion.div
@@ -85,21 +40,24 @@ function App() {
           </motion.div>
         </AnimatePresence>
       </main>
-      {currentPage === pages.length - 1 && <Footer />}
+      {currentPage === APP_PAGES.length - 1 && <Footer />}
 
-      {/* 페이지 인디케이터 */}
       <div className="page-indicators">
-        {pages.map((page, index) => (
+        {APP_PAGES.map((page, index) => (
           <button
             key={page.id}
             className={`page-dot ${index === currentPage ? 'active' : ''}`}
             onClick={() => goToPage(index)}
-            aria-label={`${page.id}로 이동`}
+            aria-label={`${page.label}로 이동`}
           />
         ))}
       </div>
     </>
   );
 }
+
+const App = () => {
+  return <Outlet />;
+};
 
 export default App;
