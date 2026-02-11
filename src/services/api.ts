@@ -57,20 +57,22 @@ export const apiService = {
     },
 
     uploadFile: async (file: File, token: string) => {
-        const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        const filename = `${Date.now()}-${sanitizedFilename}`;
-        const encodedFilename = encodeURIComponent(filename);
+        const formData = new FormData();
+        formData.append('file', file);
 
-        const response = await fetch(`${API_ENDPOINTS.UPLOAD}?filename=${encodedFilename}`, {
+        const response = await fetch(API_ENDPOINTS.UPLOAD, {
             method: 'POST',
             headers: {
-                'Content-Type': file.type,
                 'Authorization': `Bearer ${token}`,
             },
-            body: file,
+            body: formData,
         });
 
-        if (!response.ok) throw new Error('Upload failed');
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Upload failed');
+        }
+        
         const json = await response.json();
         const data = v.parse(UploadResponseSchema, json);
         return data.url;

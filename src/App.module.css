@@ -1,0 +1,11 @@
+.main {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.pageContainer {
+    position: absolute;
+    inset: 0;
+}

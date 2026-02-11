@@ -24,7 +24,26 @@ export const useProjectData = () => {
   const saveMutation = useMutation({
     mutationFn: ({ newProjects, token }: { newProjects: Project[], token: string }) => 
       apiService.saveConfig(newProjects, token),
-    onSuccess: () => {
+    onMutate: async ({ newProjects }) => {
+      // 진행 중인 refetch를 취소하여 낙관적 업데이트 데이터가 덮어씌워지지 않게 함
+      await queryClient.cancelQueries({ queryKey: projectQueryOptions.queryKey });
+
+      // 이전 상태 저장 (에러 발생 시 롤백용)
+      const previousProjects = queryClient.getQueryData(projectQueryOptions.queryKey);
+
+      // 낙관적으로 캐시 업데이트
+      queryClient.setQueryData(projectQueryOptions.queryKey, newProjects);
+
+      return { previousProjects };
+    },
+    onError: (_err, _variables, context) => {
+      // 에러 발생 시 이전 데이터로 롤백
+      if (context?.previousProjects) {
+        queryClient.setQueryData(projectQueryOptions.queryKey, context.previousProjects);
+      }
+    },
+    onSettled: () => {
+      // 성공이든 실패든 서버의 최신 데이터로 동기화
       queryClient.invalidateQueries({ queryKey: projectQueryOptions.queryKey });
     },
   });

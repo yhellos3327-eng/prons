@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Reorder } from 'framer-motion';
-import { HiPlus, HiRefresh, HiSave, HiLogout } from 'react-icons/hi';
 import { useProjectData } from '../../hooks/useProjectData';
 import { useAdminActions } from '../../hooks/useAdminActions';
 import type { Project } from '../../data/projects';
 import { Login } from './Login';
-import { ProjectCard } from './ProjectCard';
 import { useToast } from '../UI/Toast';
+import DashboardHeader from './DashboardHeader';
+import ProjectStats from './ProjectStats';
+import ProjectList from './ProjectList';
 import styles from './Dashboard.module.css';
 
 const Dashboard = () => {
@@ -30,11 +30,21 @@ const Dashboard = () => {
 
     const {
         token,
-        handleLogin,
-        handleLogout,
+        handleLogin: loginAtHook,
+        handleLogout: logoutAtHook,
         handleFileUpload,
         handleSave,
     } = useAdminActions(saveProjects, refetch);
+
+    const handleLogin = (newToken: string) => {
+        loginAtHook(newToken);
+        addToast('로그인되었습니다.', 'success');
+    };
+
+    const handleLogout = () => {
+        logoutAtHook();
+        addToast('로그아웃되었습니다.', 'info');
+    };
 
     const isSaving = mutationIsSaving;
 
@@ -45,9 +55,14 @@ const Dashboard = () => {
         }
     }, [projects, projectsLoading, mutationIsSaving, isDirty]);
 
-    const handleSaveWithReset = async (data: Project[]) => {
-        await handleSave(data);
-        setIsDirty(false);
+    const handleSaveWithReset = async () => {
+        try {
+            await handleSave(localProjects);
+            setIsDirty(false);
+            addToast('모든 변경사항이 저장되었습니다!', 'success');
+        } catch (err) {
+            addToast(err instanceof Error ? err.message : '저장 실패', 'error');
+        }
     };
 
     const handleDelete = (id: number) => {
@@ -67,6 +82,17 @@ const Dashboard = () => {
         setLocalProjects((prev) => [newProject, ...prev]);
         setIsDirty(true);
         addToast('새 프로젝트가 추가되었습니다.', 'info');
+    };
+
+    const onFileUpload = async (id: number, field: 'image' | 'video', file: File) => {
+        try {
+            addToast('파일 업로드 중...', 'info');
+            await handleFileUpload(id, field, file, handleUpdate);
+            addToast('파일 업로드 완료!', 'success');
+        } catch (err) {
+            console.error(err);
+            addToast(`파일 업로드 실패: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error');
+        }
     };
 
     if (!token) {
@@ -100,84 +126,23 @@ const Dashboard = () => {
 
     return (
         <div className={styles.dashboard}>
-            <header className={styles.header}>
-                <h1 className={styles.title}>미디어 대시보드</h1>
-                <div className={styles.actions}>
-                    <button className={`${styles.button} ${styles.buttonSuccess}`} onClick={handleAddProject}>
-                        <HiPlus /> 프로젝트 추가
-                    </button>
-                    <button className={`${styles.button} ${styles.buttonSecondary}`} onClick={() => refetch()}>
-                        <HiRefresh /> 새로고침
-                    </button>
-                    <button
-                        className={`${styles.button} ${styles.buttonPrimary}`}
-                        onClick={() => handleSaveWithReset(localProjects)}
-                        disabled={isSaving}
-                    >
-                        <HiSave /> {isSaving ? '저장 중...' : '변경사항 저장'}
-                    </button>
-                    <button className={`${styles.button} ${styles.buttonSecondary}`} onClick={handleLogout}>
-                        <HiLogout /> 로그아웃
-                    </button>
-                </div>
-            </header>
+            <DashboardHeader
+                isSaving={isSaving}
+                onAdd={handleAddProject}
+                onRefresh={refetch}
+                onSave={handleSaveWithReset}
+                onLogout={handleLogout}
+            />
 
-            {localProjects.length > 0 && (
-                <div className={styles.statsBar}>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Total Projects</div>
-                        <div className={styles.statValue}>{localProjects.length}</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>With Video</div>
-                        <div className={styles.statValue}>
-                            {localProjects.filter((p) => p.video).length}
-                        </div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>With Image</div>
-                        <div className={styles.statValue}>
-                            {localProjects.filter((p) => p.image).length}
-                        </div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Total Tags</div>
-                        <div className={styles.statValue}>
-                            {new Set(localProjects.flatMap((p) => p.tags)).size}
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ProjectStats projects={localProjects} />
 
-            {localProjects.length === 0 ? (
-                <div className={styles.emptyState}>
-                    <div className={styles.emptyIcon}>
-                        <HiPlus size={64} />
-                    </div>
-                    <h2 className={styles.emptyTitle}>프로젝트가 없습니다</h2>
-                    <p className={styles.emptyDescription}>
-                        새 프로젝트를 추가하여 포트폴리오를 관리하세요.
-                    </p>
-                </div>
-            ) : (
-                <Reorder.Group
-                    axis="y"
-                    values={localProjects}
-                    onReorder={setLocalProjects}
-                    className={styles.grid}
-                >
-                    {localProjects.map((project, index) => (
-                        <ProjectCard
-                            key={project.id}
-                            project={project}
-                            index={index}
-                            onUpdate={handleUpdate}
-                            onUpload={(id, field, file) => handleFileUpload(id, field, file, handleUpdate)}
-                            onDelete={handleDelete}
-                        />
-                    ))}
-                </Reorder.Group>
-            )}
+            <ProjectList
+                projects={localProjects}
+                onReorder={setLocalProjects}
+                onUpdate={handleUpdate}
+                onUpload={onFileUpload}
+                onDelete={handleDelete}
+            />
         </div>
     );
 };

@@ -4,6 +4,7 @@ import { m, AnimatePresence, LazyMotion, domMax } from 'framer-motion';
 import { Navbar, Footer } from './components/Layout';
 import { usePageNavigation } from './hooks/usePageNavigation';
 import { APP_PAGES } from './config/pages';
+import styles from './App.module.css';
 import './styles/global.css';
 
 const pageVariants = {
@@ -25,7 +26,7 @@ export const MainPage = () => {
   return (
     <LazyMotion features={domMax}>
       <Navbar onNavigate={handleNavClick} currentPage={APP_PAGES[currentPage].id} />
-      <main style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
+      <main className={styles.main}>
         <AnimatePresence mode="wait">
           <m.div
             key={currentPage}
@@ -34,7 +35,7 @@ export const MainPage = () => {
             animate="center"
             exit="exit"
             transition={{ duration: 0.5, ease: 'easeInOut' }}
-            style={{ position: 'absolute', inset: 0 }}
+            className={styles.pageContainer}
           >
             <Suspense fallback={null}>
               <CurrentComponent onNavigate={handleNavClick} />
