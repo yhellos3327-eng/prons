@@ -8,7 +8,11 @@ import styles from './Hero.module.css';
 const roles = ['PANDA DESIGN', '고객 신뢰 1순위 디자인 파트너'];
 
 /** 파티클 데이터 (컴포넌트 외부에서 한 번만 생성) */
-const Hero = () => {
+interface HeroProps {
+  onNavigate?: (sectionId: string) => void;
+}
+
+const Hero = ({ onNavigate }: HeroProps) => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -110,6 +114,10 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
+        onClick={(e) => {
+          e.preventDefault();
+          onNavigate?.('projects');
+        }}
       >
         <span className={styles.scrollText}>스크롤</span>
         <motion.div

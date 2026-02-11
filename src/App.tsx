@@ -51,7 +51,7 @@ function App() {
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             style={{ position: 'absolute', inset: 0 }}
           >
-            <CurrentComponent />
+            <CurrentComponent onNavigate={handleNavClick} />
           </motion.div>
         </AnimatePresence>
       </main>
