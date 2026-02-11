@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Reorder } from 'framer-motion';
+import { HiPlus } from 'react-icons/hi';
 import { useProjectData } from '../../hooks/useProjectData';
 import type { Project } from '../../data/projects';
 import { Login } from './Login';
@@ -9,10 +11,8 @@ import styles from './Dashboard.module.css';
 // R2 업로드 API 호출 함수
 const uploadFile = async (file: File, password: string): Promise<string> => {
     const filename = `${Date.now()}-${file.name}`;
-    // 한글 파일명 등 특수문자 처리를 위해 encodeURIComponent 사용
     const encodedFilename = encodeURIComponent(filename);
 
-    // 1. 업로드 (쿼리 파라미터로 파일명 전달)
     const response = await fetch(`/api/upload?filename=${encodedFilename}`, {
         method: 'POST',
         headers: {
@@ -54,10 +54,27 @@ export default function Dashboard() {
         addToast('로그아웃되었습니다.', 'info');
     };
 
-    const handleUpdate = (id: number, field: keyof Project, value: string) => {
+    const handleUpdate = (id: number, field: keyof Project, value: any) => {
         setLocalProjects((prev) =>
             prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
         );
+    };
+
+    const handleDelete = (id: number) => {
+        setLocalProjects((prev) => prev.filter((p) => p.id !== id));
+        addToast('프로젝트가 목록에서 제거되었습니다. (저장 시 반영)', 'info');
+    };
+
+    const handleAddProject = () => {
+        const newProject: Project = {
+            id: Date.now(), // Temporary ID
+            title: '새 프로젝트',
+            description: '',
+            image: '',
+            tags: [],
+        };
+        setLocalProjects((prev) => [newProject, ...prev]);
+        addToast('새 프로젝트가 추가되었습니다.', 'info');
     };
 
     const handleFileUpload = async (id: number, field: 'image' | 'video', file: File) => {
@@ -102,6 +119,9 @@ export default function Dashboard() {
             <header className={styles.header}>
                 <h1 className={styles.title}>미디어 대시보드</h1>
                 <div className={styles.actions}>
+                    <button className={styles.button} onClick={handleAddProject}>
+                        <HiPlus style={{ marginRight: '5px' }} /> 프로젝트 추가
+                    </button>
                     <button className={`${styles.button} ${styles.buttonSecondary}`} onClick={() => refetch()}>
                         새로고침
                     </button>
@@ -114,16 +134,22 @@ export default function Dashboard() {
                 </div>
             </header>
 
-            <div className={styles.grid}>
+            <Reorder.Group
+                axis="y"
+                values={localProjects}
+                onReorder={setLocalProjects}
+                className={styles.grid}
+            >
                 {localProjects.map((project) => (
                     <ProjectCard
                         key={project.id}
                         project={project}
                         onUpdate={handleUpdate}
                         onUpload={handleFileUpload}
+                        onDelete={handleDelete}
                     />
                 ))}
-            </div>
+            </Reorder.Group>
         </div>
     );
 }
