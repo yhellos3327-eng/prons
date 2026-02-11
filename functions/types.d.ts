@@ -14,6 +14,7 @@ declare global {
     interface R2Bucket {
         get(key: string): Promise<R2Object | null>;
         put(key: string, value: ReadableStream | ArrayBuffer | string, options?: R2PutOptions): Promise<R2Object>;
+        delete(key: string): Promise<void>;
     }
 
     interface R2Object {
