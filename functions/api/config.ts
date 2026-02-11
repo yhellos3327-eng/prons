@@ -21,13 +21,19 @@ export const onRequestGet: PagesFunction = async (context) => {
 
     if (!object) {
       return new Response(JSON.stringify(defaultProjects), {
-        headers: jsonHeaders,
+        headers: {
+          ...jsonHeaders,
+          'ETag': 'initial',
+        },
       });
     }
 
     const data = await object.json();
     return new Response(JSON.stringify(data), {
-      headers: jsonHeaders,
+      headers: {
+        ...jsonHeaders,
+        'ETag': object.httpEtag, // R2의 객체 ETag 전달
+      },
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: 'Failed to fetch config' }), {
@@ -47,16 +53,25 @@ export const onRequestPost: PagesFunction = async (context) => {
       });
     }
 
+    const ifMatch = context.request.headers.get('If-Match');
     const newData = await context.request.json();
     
-    // 이전 데이터 가져와서 삭제된 미디어 파일 확인
+    // 이전 데이터 가져와서 ETag 검증 및 삭제 작업 수행
     const oldObject = await bucket.get(CONFIG_KEY);
+    
+    // Concurrency Check (Lost Update 방지)
+    if (oldObject && ifMatch && ifMatch !== 'initial' && oldObject.httpEtag !== ifMatch) {
+        return new Response(JSON.stringify({ error: 'Precondition Failed: Data has been modified by another user.' }), {
+            status: 412,
+            headers: jsonHeaders,
+        });
+    }
+
     if (oldObject) {
       try {
         const oldData = await oldObject.json();
         const newUrls = new Set<string>();
         
-        // 새로운 데이터의 모든 미디어 URL 수집
         if (Array.isArray(newData)) {
           newData.forEach((p: any) => {
             if (p.image) newUrls.add(p.image);
@@ -64,19 +79,16 @@ export const onRequestPost: PagesFunction = async (context) => {
           });
         }
 
-        // 이전 데이터 중 새로운 데이터에 없는 URL 삭제 루틴
         if (Array.isArray(oldData)) {
           for (const p of oldData) {
             const urlsToCheck = [p.image, p.video].filter(Boolean);
             for (const url of urlsToCheck) {
               if (typeof url === 'string' && !newUrls.has(url) && url.startsWith('/api/media/')) {
-                // URL에서 파일명 추출
                 const filename = url.replace('/api/media/', '');
                 if (filename) {
                   try {
                     const decodedFilename = decodeURIComponent(filename);
                     await bucket.delete(decodedFilename);
-                    console.log(`Deleted media file: ${decodedFilename}`);
                   } catch (e) {
                     console.error(`Failed to delete media file ${filename}:`, e);
                   }
@@ -91,10 +103,13 @@ export const onRequestPost: PagesFunction = async (context) => {
     }
 
     // R2에 데이터 저장
-    await bucket.put(CONFIG_KEY, JSON.stringify(newData));
+    const putResult = await bucket.put(CONFIG_KEY, JSON.stringify(newData));
 
-    return new Response(JSON.stringify({ success: true, data: newData }), {
-      headers: jsonHeaders,
+    return new Response(JSON.stringify(newData), {
+      headers: {
+        ...jsonHeaders,
+        'ETag': putResult.httpEtag,
+      },
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: 'Failed to save config' }), {

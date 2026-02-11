@@ -29,10 +29,14 @@ export const apiService = {
             const response = await fetch(API_ENDPOINTS.CONFIG, { cache: 'no-store' });
             if (!response.ok) return null;
             
+            const etag = response.headers.get('ETag');
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 const json = await response.json();
-                return v.parse(ProjectListSchema, json);
+                const schema = v.union([ProjectListSchema, v.object({ data: ProjectListSchema })]);
+                const validated = v.parse(schema, json);
+                const projects = Array.isArray(validated) ? validated : validated.data;
+                return { projects, etag };
             }
             return null;
         } catch (error) {
@@ -41,19 +45,32 @@ export const apiService = {
         }
     },
 
-    saveConfig: async (data: any, token: string) => {
+    saveConfig: async (data: any, token: string, etag?: string) => {
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        };
+        if (etag) {
+            headers['If-Match'] = etag;
+        }
+
         const response = await fetch(API_ENDPOINTS.CONFIG, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
+            headers,
             body: JSON.stringify(data),
         });
         const json = await response.json();
-        if (!response.ok) throw new Error('Failed to save config');
         
-        return v.parse(ProjectListSchema, json);
+        if (response.status === 412) {
+            throw new Error('데이터가 다른 곳에서 수정되었습니다. 새로고침 후 다시 시도해주세요.');
+        }
+        if (!response.ok) throw new Error(json.error || 'Failed to save config');
+        
+        const newEtag = response.headers.get('ETag');
+        const schema = v.union([ProjectListSchema, v.object({ data: ProjectListSchema })]);
+        const validated = v.parse(schema, json);
+        const projects = Array.isArray(validated) ? validated : validated.data;
+        return { projects, etag: newEtag };
     },
 
     uploadFile: async (file: File, token: string) => {

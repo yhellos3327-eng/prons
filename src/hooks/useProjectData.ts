@@ -7,49 +7,48 @@ export const projectQueryOptions = queryOptions({
   queryKey: ['projects'],
   queryFn: async () => {
     const data = await apiService.fetchConfig();
-    return Array.isArray(data) ? data : defaultProjects;
+    if (!data) return { projects: defaultProjects, etag: 'initial' };
+    return data;
   },
 });
 
 export const useProjectData = () => {
   const queryClient = useQueryClient();
 
-  const { 
-    data: projects = defaultProjects, 
-    isLoading, 
-    error,
-    refetch 
-  } = useQuery(projectQueryOptions);
+  const { data, isLoading, error, refetch } = useQuery(projectQueryOptions);
+
+  const projects = data?.projects ?? defaultProjects;
+  const currentEtag = data?.etag;
 
   const saveMutation = useMutation({
-    mutationFn: ({ newProjects, token }: { newProjects: Project[], token: string }) => 
-      apiService.saveConfig(newProjects, token),
+    mutationFn: ({ newProjects, token, etag }: { newProjects: Project[], token: string, etag?: string }) => 
+      apiService.saveConfig(newProjects, token, etag),
     onMutate: async ({ newProjects }) => {
-      // 진행 중인 refetch를 취소하여 낙관적 업데이트 데이터가 덮어씌워지지 않게 함
       await queryClient.cancelQueries({ queryKey: projectQueryOptions.queryKey });
+      const previousConfig = queryClient.getQueryData<typeof data>(projectQueryOptions.queryKey);
 
-      // 이전 상태 저장 (에러 발생 시 롤백용)
-      const previousProjects = queryClient.getQueryData(projectQueryOptions.queryKey);
+      queryClient.setQueryData(projectQueryOptions.queryKey, (old: any) => ({
+          ...old,
+          projects: newProjects
+      }));
 
-      // 낙관적으로 캐시 업데이트
-      queryClient.setQueryData(projectQueryOptions.queryKey, newProjects);
-
-      return { previousProjects };
+      return { previousConfig };
     },
     onError: (_err, _variables, context) => {
-      // 에러 발생 시 이전 데이터로 롤백
-      if (context?.previousProjects) {
-        queryClient.setQueryData(projectQueryOptions.queryKey, context.previousProjects);
+      if (context?.previousConfig) {
+        queryClient.setQueryData(projectQueryOptions.queryKey, context.previousConfig);
       }
     },
-    onSettled: () => {
-      // 성공이든 실패든 서버의 최신 데이터로 동기화
+    onSettled: (newData) => {
+      if (newData) {
+          queryClient.setQueryData(projectQueryOptions.queryKey, newData);
+      }
       queryClient.invalidateQueries({ queryKey: projectQueryOptions.queryKey });
     },
   });
 
   const saveProjects = async (newProjects: Project[], token: string) => {
-    return saveMutation.mutateAsync({ newProjects, token });
+    return saveMutation.mutateAsync({ newProjects, token, etag: currentEtag ?? undefined });
   };
 
   return { 
@@ -63,6 +62,6 @@ export const useProjectData = () => {
 }
 
 export const useSuspenseProjectData = () => {
-  const { data: projects } = useSuspenseQuery(projectQueryOptions);
-  return { projects };
+  const { data } = useSuspenseQuery(projectQueryOptions);
+  return { projects: data.projects };
 };

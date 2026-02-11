@@ -16,14 +16,6 @@ const queryClient = new QueryClient({
   },
 });
 
-const DashboardRedirect = () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('page') === 'dashboard') {
-    return <Navigate to="/dashboard" replace />;
-  }
-  return <Navigate to="/" replace />;
-};
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <DashboardRedirect />,
+        element: <Navigate to="/" replace />,
       }
     ]
   }
