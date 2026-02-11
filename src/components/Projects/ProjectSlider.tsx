@@ -6,25 +6,7 @@ import styles from './ProjectSlider.module.css';
 
 const SLIDE_INTERVAL = 5000;
 
-// 파티클 데이터 (컴포넌트 외부에서 한 번만 생성 — Hero와 동일 구조) */
-const generateParticles = (count: number) => {
-  return Array.from({ length: count }).map((_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 3 + 1,
-    duration: Math.random() * 10 + 5,
-    delay: Math.random() * 5,
-  }));
-};
-
-const particles = generateParticles(20);
-
-interface ProjectSliderProps {
-  onNavigate?: (sectionId: string) => void;
-}
-
-const ProjectSlider = ({ onNavigate }: ProjectSliderProps) => {
+const ProjectSlider = () => {
   const { projects } = useProjectData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);

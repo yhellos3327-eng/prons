@@ -9,13 +9,31 @@ export const Login = ({ onLogin }: LoginProps) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!password.trim()) {
             setError('비밀번호를 입력해주세요.');
             return;
         }
-        onLogin(password);
+
+        try {
+            // Validate password against the server
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': password,
+                },
+            });
+
+            if (response.ok) {
+                onLogin(password);
+            } else {
+                setError('비밀번호가 일치하지 않습니다.');
+            }
+        } catch (err) {
+            setError('로그인 확인 중 오류가 발생했습니다.');
+        }
     };
 
     return (

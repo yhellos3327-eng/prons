@@ -5,8 +5,8 @@ interface Env {
 export const onRequest: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);
 
-  // /api/ 경로에 대해서만 인증 체크
-  if (url.pathname.startsWith('/api/') && context.request.method !== 'GET') {
+  // /api/ 경로에 대해서만 인증 체크 (OPTIONS 요청은 제외 - CORS Preflight 등)
+  if (url.pathname.startsWith('/api/') && context.request.method !== 'GET' && context.request.method !== 'OPTIONS') {
     const adminPassword = context.env.ADMIN_PASSWORD;
     const requestPassword = context.request.headers.get('x-admin-password');
 
