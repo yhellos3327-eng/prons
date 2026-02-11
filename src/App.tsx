@@ -1,10 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar, Footer } from './components/Layout';
 import { Hero } from './components/Hero';
 import { ProjectSlider } from './components/Projects';
 import { About } from './components/About';
 import { Contact } from './components/Contact';
+import { Dashboard } from './components/Dashboard';
 import { usePageNavigation } from './hooks/usePageNavigation';
 import './styles/global.css';
 
@@ -28,7 +29,28 @@ const pageVariants = {
 };
 
 function App() {
+  const [isDashboard, setIsDashboard] = useState(false);
   const { currentPage, goToPage } = usePageNavigation(pages.length);
+
+  useEffect(() => {
+    const checkDashboard = () => {
+      const params = new URLSearchParams(window.location.search);
+      const isDash = params.get('page') === 'dashboard';
+      setIsDashboard(isDash);
+
+      if (isDash) {
+        document.body.style.overflow = 'auto';
+        document.body.style.height = 'auto';
+      } else {
+        document.body.style.overflow = 'hidden';
+        document.body.style.height = '100vh';
+      }
+    };
+
+    checkDashboard();
+    window.addEventListener('popstate', checkDashboard);
+    return () => window.removeEventListener('popstate', checkDashboard);
+  }, []);
 
   const CurrentComponent = pages[currentPage].component;
 
@@ -36,6 +58,10 @@ function App() {
     const index = pages.findIndex(p => p.id === sectionId);
     if (index !== -1) goToPage(index);
   }, [goToPage]);
+
+  if (isDashboard) {
+    return <Dashboard />;
+  }
 
   return (
     <>

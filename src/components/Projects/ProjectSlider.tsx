@@ -1,13 +1,31 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiPhotograph, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
-import { projects } from '../../data/projects';
+import { useProjectData } from '../../hooks/useProjectData';
 import styles from './ProjectSlider.module.css';
 
 const SLIDE_INTERVAL = 5000;
 
-/** 파티클 데이터 (컴포넌트 외부에서 한 번만 생성 — Hero와 동일 구조) */
-const ProjectSlider = () => {
+// 파티클 데이터 (컴포넌트 외부에서 한 번만 생성 — Hero와 동일 구조) */
+const generateParticles = (count: number) => {
+  return Array.from({ length: count }).map((_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 3 + 1,
+    duration: Math.random() * 10 + 5,
+    delay: Math.random() * 5,
+  }));
+};
+
+const particles = generateParticles(20);
+
+interface ProjectSliderProps {
+  onNavigate?: (sectionId: string) => void;
+}
+
+const ProjectSlider = ({ onNavigate }: ProjectSliderProps) => {
+  const { projects } = useProjectData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [direction, setDirection] = useState(1);
@@ -16,7 +34,7 @@ const ProjectSlider = () => {
   const handleNext = useCallback(() => {
     setDirection(1);
     setActiveIndex((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
-  }, []);
+  }, [projects.length]);
 
   const handlePrev = useCallback(() => {
     setDirection(-1);
@@ -99,14 +117,14 @@ const ProjectSlider = () => {
   };
 
   return (
-    <section id="projects" className={`section ${styles.projects}`}>
+    <section id="projects" className={`section ${styles.projects} `}>
       <div className={styles.backgroundGradient} />
 
       {/* 글로우 오브 효과 */}
       <div className={styles.glowOrbs}>
-        <div className={`${styles.orb} ${styles.orbPrimary}`} />
-        <div className={`${styles.orb} ${styles.orbSecondary}`} />
-        <div className={`${styles.orb} ${styles.orbAccent}`} />
+        <div className={`${styles.orb} ${styles.orbPrimary} `} />
+        <div className={`${styles.orb} ${styles.orbSecondary} `} />
+        <div className={`${styles.orb} ${styles.orbAccent} `} />
       </div>
 
       <div className="container">
@@ -136,14 +154,14 @@ const ProjectSlider = () => {
         >
           {/* 좌/우 네비게이션 버튼 */}
           <button
-            className={`${styles.navigationButton} ${styles.prevButton}`}
+            className={`${styles.navigationButton} ${styles.prevButton} `}
             onClick={handlePrev}
             aria-label="이전 프로젝트"
           >
             <HiChevronLeft size={24} />
           </button>
           <button
-            className={`${styles.navigationButton} ${styles.nextButton}`}
+            className={`${styles.navigationButton} ${styles.nextButton} `}
             onClick={handleNext}
             aria-label="다음 프로젝트"
           >
@@ -222,7 +240,7 @@ const ProjectSlider = () => {
               <button
                 key={index}
                 className={`${styles.indicator} ${index === activeIndex ? styles.active : ''
-                  }`}
+                  } `}
                 onClick={() => {
                   setDirection(index > activeIndex ? 1 : -1);
                   setActiveIndex(index);
