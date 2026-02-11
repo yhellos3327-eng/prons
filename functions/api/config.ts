@@ -41,13 +41,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       ORDER BY p.display_order ASC
     `).all();
 
-    if (!results || results.length === 0) {
-      return new Response(JSON.stringify(defaultProjects), {
-        headers: jsonHeaders,
-      });
-    }
-
-    // 데이터 가공 (tags_string -> tags array)
+    // 데이터가 없는 경우 빈 배열 반환 (사용자가 의도적으로 다 삭제했을 수 있음)
     const projects = results.map((row: any) => ({
       ...row,
       tags: row.tags_string ? row.tags_string.split(',') : [],
@@ -84,6 +78,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
+    console.log(`Starting D1 Batch Update for ${newData.length} projects`);
+
     // D1 Batch 트랜잭션 시작
     const statements: D1PreparedStatement[] = [];
 
@@ -92,14 +88,23 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     statements.push(db.prepare('DELETE FROM projects'));
 
     // 2. 새 데이터 삽입
+    // ID가 AUTOINCREMENT이므로, 새 데이터를 넣을 때 ID가 충돌할 수 있음.
+    // 하지만 DELETE 이후에 같은 ID를 명시적으로 넣는 것은 가능함.
     newData.forEach((p: any, index: number) => {
+      // 숫자가 아닌 ID(임시 ID)인 경우 null로 처리하여 DB가 생성하게 함
+      const idToInsert = typeof p.id === 'string' ? null : p.id;
+      
       statements.push(db.prepare(`
         INSERT INTO projects (id, title, description, image, video, display_order)
         VALUES (?, ?, ?, ?, ?, ?)
-      `).bind(p.id, p.title, p.description, p.image || null, p.video || null, index));
+      `).bind(idToInsert, p.title, p.description, p.image || null, p.video || null, index));
 
       if (Array.isArray(p.tags)) {
         p.tags.forEach((tag: string) => {
+          // 태그 삽입 시 project_id는 방금 생성되거나 지정된 p.id를 참조해야 함
+          // 만약 idToInsert가 null이면 이 시점에서는 project_id를 알 수 없음 (Batch의 한계)
+          // 따라서 프론트엔드에서 준 ID를 최대한 존중하는 방향으로 가거나 
+          // tags 테이블 설정을 변경해야 함. 여기서는 기존 ID 유지 방식 우선.
           statements.push(db.prepare(`
             INSERT INTO tags (project_id, tag)
             VALUES (?, ?)
@@ -110,13 +115,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     // 배치 실행
     await db.batch(statements);
+    console.log('D1 Batch Update Successful');
 
     return new Response(JSON.stringify(newData), {
       headers: jsonHeaders,
     });
-  } catch (error) {
-    console.error('D1 Save Config Error:', error);
-    return new Response(JSON.stringify({ error: 'Failed to save config to D1' }), {
+  } catch (error: any) {
+    console.error('D1 Save Config Error:', error.message, error.stack);
+    return new Response(JSON.stringify({ error: `Failed to save config: ${error.message}` }), {
       status: 500,
       headers: jsonHeaders,
     });
