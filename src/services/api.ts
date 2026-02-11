@@ -30,15 +30,14 @@ export const apiService = {
             if (!response.ok) return null;
             
             const etag = response.headers.get('ETag');
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                const json = await response.json();
-                const schema = v.union([ProjectListSchema, v.object({ data: ProjectListSchema })]);
-                const validated = v.parse(schema, json);
-                const projects = Array.isArray(validated) ? validated : validated.data;
-                return { projects, etag };
-            }
-            return null;
+            const json = await response.json();
+            
+            // D1 응답은 직접 배열이거나 { data: [...] } 일 수 있음
+            const schema = v.union([ProjectListSchema, v.object({ data: ProjectListSchema })]);
+            const validated = v.parse(schema, json);
+            const projects = Array.isArray(validated) ? validated : validated.data;
+            
+            return { projects, etag: etag || 'd1-managed' };
         } catch (error) {
             console.error('API fetchConfig error:', error);
             return null;
@@ -50,7 +49,8 @@ export const apiService = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         };
-        if (etag) {
+        // D1에서는 SQL 트랜잭션이 동시성을 관리하므로 If-Match는 선택적
+        if (etag && etag !== 'd1-managed') {
             headers['If-Match'] = etag;
         }
 
@@ -70,7 +70,8 @@ export const apiService = {
         const schema = v.union([ProjectListSchema, v.object({ data: ProjectListSchema })]);
         const validated = v.parse(schema, json);
         const projects = Array.isArray(validated) ? validated : validated.data;
-        return { projects, etag: newEtag };
+        
+        return { projects, etag: newEtag || 'd1-managed' };
     },
 
     uploadFile: async (file: File, token: string) => {

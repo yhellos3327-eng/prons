@@ -1,27 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
-import Unfonts from 'unplugin-fonts/vite';
 import { FontaineTransform } from 'fontaine';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    Unfonts({
-      custom: {
-        families: [
-          {
-            name: 'LineSeed',
-            local: 'LineSeed',
-            src: './src/assets/fonts/LINESeedKR-*.woff2',
-          },
-        ],
-        display: 'swap',
-        preload: true,
-        injectTo: 'head-prepend',
-      },
-    }),
     FontaineTransform.vite({
       fallbacks: ['Arial', 'sans-serif'],
       resolvePath: (id) => new URL(`./src/assets/fonts/${id}`, import.meta.url),
