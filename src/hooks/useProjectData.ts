@@ -10,6 +10,7 @@ export const projectQueryOptions = queryOptions({
     if (!data) return { projects: defaultProjects, etag: 'initial' };
     return data;
   },
+  staleTime: 0, // Ensure we always check for new data
 });
 
 export const useProjectData = () => {
@@ -39,10 +40,12 @@ export const useProjectData = () => {
         queryClient.setQueryData(projectQueryOptions.queryKey, context.previousConfig);
       }
     },
-    onSettled: (newData) => {
+    onSuccess: (newData) => {
       if (newData) {
-          queryClient.setQueryData(projectQueryOptions.queryKey, newData);
+        queryClient.setQueryData(projectQueryOptions.queryKey, newData);
       }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: projectQueryOptions.queryKey });
     },
   });

@@ -59,9 +59,21 @@ export const onRequestPost: PagesFunction = async (context) => {
     // 이전 데이터 가져와서 ETag 검증 및 삭제 작업 수행
     const oldObject = await bucket.get(CONFIG_KEY);
     
+    // ETag 정규화 함수 (따옴표 제거)
+    const normalizeEtag = (tag: string | null | undefined) => {
+        if (!tag) return null;
+        return tag.replace(/^W\//, '').replace(/"/g, '');
+    };
+
+    const normalizedIfMatch = normalizeEtag(ifMatch);
+    const normalizedOldEtag = oldObject ? normalizeEtag(oldObject.httpEtag) : 'initial';
+
     // Concurrency Check (Lost Update 방지)
-    if (oldObject && ifMatch && ifMatch !== 'initial' && oldObject.httpEtag !== ifMatch) {
-        return new Response(JSON.stringify({ error: 'Precondition Failed: Data has been modified by another user.' }), {
+    if (oldObject && normalizedIfMatch && normalizedIfMatch !== 'initial' && normalizedOldEtag !== normalizedIfMatch) {
+        return new Response(JSON.stringify({ 
+          error: 'Precondition Failed: Data has been modified by another user.',
+          debug: { ifMatch: normalizedIfMatch, current: normalizedOldEtag }
+        }), {
             status: 412,
             headers: jsonHeaders,
         });
@@ -102,10 +114,14 @@ export const onRequestPost: PagesFunction = async (context) => {
       }
     }
 
-    // R2에 데이터 저장
-    const putResult = await bucket.put(CONFIG_KEY, JSON.stringify(newData));
+    // R2에 데이터 저장 (객체 형태로 감싸서 저장)
+    const savedObject = { 
+      projects: newData,
+      updatedAt: new Date().toISOString()
+    };
+    const putResult = await bucket.put(CONFIG_KEY, JSON.stringify(savedObject));
 
-    return new Response(JSON.stringify(newData), {
+    return new Response(JSON.stringify(savedObject), {
       headers: {
         ...jsonHeaders,
         'ETag': putResult.httpEtag,

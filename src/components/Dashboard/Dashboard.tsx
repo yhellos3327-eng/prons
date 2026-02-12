@@ -55,7 +55,29 @@ const Dashboard = () => {
         }
     }, [projects, projectsLoading, mutationIsSaving, isDirty]);
 
+    // 대시보드 진입 시 body에 클래스 추가하여 스크롤 허용
+    useEffect(() => {
+        document.body.classList.add('dashboard-active');
+        // Clean up on unmount
+        return () => {
+            document.body.classList.remove('dashboard-active');
+        };
+    }, []);
+
+    const handleReorder = useCallback((newOrder: Project[]) => {
+        setLocalProjects(newOrder);
+        setIsDirty(true);
+    }, []);
+
     const handleSaveWithReset = async () => {
+        if (!isDirty) {
+            addToast('변경사항이 없습니다.', 'info');
+            return;
+        }
+        if (!token) {
+            addToast('로그인이 필요합니다.', 'error');
+            return;
+        }
         try {
             await handleSave(localProjects);
             setIsDirty(false);
@@ -129,7 +151,10 @@ const Dashboard = () => {
             <DashboardHeader
                 isSaving={isSaving}
                 onAdd={handleAddProject}
-                onRefresh={refetch}
+                onRefresh={() => {
+                    refetch();
+                    setIsDirty(false);
+                }}
                 onSave={handleSaveWithReset}
                 onLogout={handleLogout}
             />
@@ -138,7 +163,7 @@ const Dashboard = () => {
 
             <ProjectList
                 projects={localProjects}
-                onReorder={setLocalProjects}
+                onReorder={handleReorder}
                 onUpdate={handleUpdate}
                 onUpload={onFileUpload}
                 onDelete={handleDelete}

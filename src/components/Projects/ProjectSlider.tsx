@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiPhotograph, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { useSuspenseProjectData } from '../../hooks/useProjectData';
+import type { Project } from '../../data/projects';
 import styles from './ProjectSlider.module.css';
 
 const SLIDE_INTERVAL = 5000;
@@ -14,7 +15,7 @@ const ProjectSlider = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // 미디어가 있는 프로젝트만 필터링
-  const visibleProjects = useMemo(() => projects.filter(p => p.video || p.image), [projects]);
+  const visibleProjects = useMemo(() => projects.filter((p: Project) => p.video || p.image), [projects]);
 
   // activeIndex가 범위를 초과하면 보정
   const safeIndex = visibleProjects.length > 0 ? activeIndex % visibleProjects.length : 0;
@@ -268,7 +269,7 @@ const ProjectSlider = () => {
 
           {/* 인디케이터 */}
           <div className={styles.indicators}>
-            {visibleProjects.map((project, index) => (
+            {visibleProjects.map((project: Project, index: number) => (
               <button
                 key={index}
                 className={`${styles.indicator} ${index === safeIndex ? styles.active : ''

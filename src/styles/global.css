@@ -164,6 +164,25 @@ button {
   box-shadow: 0 0 8px rgba(69, 192, 255, 0.3);
 }
 
+/* 대시보드 전용 스크롤바 */
+body.dashboard-active::-webkit-scrollbar {
+  width: 10px !important;
+}
+
+body.dashboard-active::-webkit-scrollbar-track {
+  background: #000 !important;
+}
+
+body.dashboard-active::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #45c0ff 0%, #3b82f6 100%) !important;
+  border-radius: 5px !important;
+  border: 2px solid #000 !important;
+}
+
+body.dashboard-active::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #51c7ff 0%, #4a90ff 100%) !important;
+}
+
 /* 드래그 선택 */
 ::selection {
   background: var(--accent-primary);

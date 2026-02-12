@@ -27,15 +27,25 @@ export const apiService = {
     fetchConfig: async () => {
         try {
             const response = await fetch(API_ENDPOINTS.CONFIG, { cache: 'no-store' });
-            if (!response.ok) return null;
+            if (!response.ok) {
+                console.warn(`API fetchConfig returned ${response.status}: Falling back to default data.`);
+                return null;
+            }
             
             const etag = response.headers.get('ETag');
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 const json = await response.json();
-                const schema = v.union([ProjectListSchema, v.object({ data: ProjectListSchema })]);
+                const schema = v.union([
+                    ProjectListSchema, 
+                    v.object({ data: ProjectListSchema }),
+                    v.object({ projects: ProjectListSchema })
+                ]);
                 const validated = v.parse(schema, json);
-                const projects = Array.isArray(validated) ? validated : validated.data;
+                const projects = Array.isArray(validated) 
+                    ? validated 
+                    : (('data' in validated) ? validated.data : (validated as any).projects);
+                console.log(`API fetchConfig success: Loaded ${projects.length} projects.`);
                 return { projects, etag };
             }
             return null;
@@ -67,9 +77,15 @@ export const apiService = {
         if (!response.ok) throw new Error(json.error || 'Failed to save config');
         
         const newEtag = response.headers.get('ETag');
-        const schema = v.union([ProjectListSchema, v.object({ data: ProjectListSchema })]);
+        const schema = v.union([
+            ProjectListSchema, 
+            v.object({ data: ProjectListSchema }),
+            v.object({ projects: ProjectListSchema })
+        ]);
         const validated = v.parse(schema, json);
-        const projects = Array.isArray(validated) ? validated : validated.data;
+        const projects = Array.isArray(validated) 
+            ? validated 
+            : (('data' in validated) ? validated.data : (validated as any).projects);
         return { projects, etag: newEtag };
     },
 

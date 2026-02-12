@@ -25,7 +25,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <MainPage />,
-        loader: () => queryClient.ensureQueryData(projectQueryOptions),
+        loader: () => queryClient.fetchQuery(projectQueryOptions),
       },
       {
         path: "dashboard",
